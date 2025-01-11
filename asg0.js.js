@@ -14,6 +14,29 @@ function drawVector(v, color){
 
 }
 
+function angleBetween(v1, v2){
+  x_id =  document.getElementById('x-coordinate'); 
+  x_value = parseInt(x_id.value);
+  v1.elements[0] = x_value;
+  y_id =  document.getElementById('y-coordinate'); 
+  y_value = parseInt(y_id.value);
+  v1.elements[1] = y_value;
+  console.log(v1.elements)
+ 
+  x2_id =  document.getElementById('x2-coordinate'); 
+  x2_value = parseInt(x2_id.value);
+  v2.elements[0] = x2_value;
+  y2_id =  document.getElementById('y2-coordinate'); 
+  y2_value = parseInt(y2_id.value);
+  v2.elements[1] = y2_value;
+  //console.log(Vector3.dot(v1,v2));
+  let dotpr = Vector3.dot(v1,v2);
+  let magnitudes = v1.magnitude() * v2.magnitude();
+
+
+  return Math.acos(dotpr/magnitudes) * (180 / Math.PI)
+}
+
 function handleDrawEvent(){
   v1 = new Vector3([0,0,0])
   v2 = new Vector3([0,0,0])
@@ -90,6 +113,10 @@ function handleDrawOperationEvent(){
     v4.set(v2.div(s));
 
   }
+  else if (option == "Angle Between"){
+    console.log(angleBetween(v1,v2));
+
+  }
   else if (option == "Magnitude"){
     console.log("Magnitude v1: " + v1.magnitude());
     console.log("Magnitude v2: " + v2.magnitude());
@@ -99,7 +126,6 @@ function handleDrawOperationEvent(){
   else if (option == "Normalize"){
     v3.set(v1.normalize());
     v4.set(v2.normalize());
-  
   }
   ctx.clearRect(0, 0,canvas.width, canvas.height);
   // Draw a blue rectangle
