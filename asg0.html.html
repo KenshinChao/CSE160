@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)file:///C:/Users/Kenshin/Desktop/CSE115A/asg0.html.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Draw a blue rectangle (canvas version)</title>
+  </head>
+
+  <body onload="main()">
+    <canvas id="example" width="400" height="400">
+      Please use a browser that supports "canvas"
+    </canvas>
+    <script src="C:\Users\Kenshin\Desktop\CSE160\asg0.js.js"></script>
+    <script src="C:\Users\Kenshin\Desktop\CSE160\lib\cuon-matrix-cse160.js"></script>
+    <br><br>
+    <label>v1</label>
+
+      <label for="x-coordinate">x</label>
+          <input type="number" id="x-coordinate" name="x-coordinate" required>
+      
+          <label for="y-coordinate">y</label>
+          <input type="number" id="y-coordinate" name="y-coordinate" required>
+        
+    <br><br>
+    <label>v2</label>
+ 
+      <label for="x2-coordinate">x</label>
+          <input type="number" id="x2-coordinate" name="x2-coordinate" required>
+      
+          <label for="y2-coordinate">y</label>
+          <input type="number" id="y2-coordinate" name="y2-coordinate" required>
+      
+    <br><br>
+    <input type="button" value="Draw" id="draw-button" onclick="handleDrawEvent()">
+    <br><br>
+    <label>Operation:</label>
+    <select name="Operation" id="Operation">
+      <option value="Add">Add</option>
+      <option value="Subtract">Subtract</option>
+      <option value="Multiply">Multiply</option>
+      <option value="Divide">Divide</option>
+    </select>
+   
+    <label for= "Scalar">Scalar:</label>
+    <input type="number" id="Scalar" name="Scalar" required>
+    <br><br>
+    <input type="button" value="Draw" id="draw-button" onclick="handleDrawOperationEvent()">
+
+</body></html>
