@@ -4,7 +4,7 @@
  * This class contains the function that is equivalent to OpenGL matrix stack.
  * The matrix after conversion is calculated by multiplying a conversion matrix from the right.
  * The matrix is replaced by the calculated result.
- */
+ **/
 
 class Vector3 {
     constructor(opt_src) {

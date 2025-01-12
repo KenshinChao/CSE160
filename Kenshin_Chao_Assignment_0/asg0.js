@@ -21,7 +21,7 @@ function angleBetween(v1, v2){
   y_id =  document.getElementById('y-coordinate'); 
   y_value = parseInt(y_id.value);
   v1.elements[1] = y_value;
-  console.log(v1.elements)
+  //console.log(v1.elements)
  
   x2_id =  document.getElementById('x2-coordinate'); 
   x2_value = parseInt(x2_id.value);
@@ -68,7 +68,7 @@ function handleDrawEvent(){
   y_id =  document.getElementById('y-coordinate'); 
   y_value = parseInt(y_id.value);
   v1.elements[1] = y_value;
-  console.log(v1.elements)
+  //console.log(v1.elements)
  
   x2_id =  document.getElementById('x2-coordinate'); 
   x2_value = parseInt(x2_id.value);
@@ -76,7 +76,7 @@ function handleDrawEvent(){
   y2_id =  document.getElementById('y2-coordinate'); 
   y2_value = parseInt(y2_id.value);
   v2.elements[1] = y2_value;
-  console.log(v2.elements)
+  //console.log(v2.elements)
   drawVector(v1,"red")
   drawVector(v2,"blue")
 
@@ -110,10 +110,10 @@ function handleDrawOperationEvent(){
   v2.elements[1] = y2_value;
 
   option = document.getElementById('Operation').value;
-  console.log(option);
+  //console.log(option);
   if (option == "Add"){
     v3.set(v1.add(v2));
-    console.log(v3.elements);
+    //console.log(v3.elements);
   } 
   else if (option == "Subtract"){
     v3.set(v1.sub(v2));
