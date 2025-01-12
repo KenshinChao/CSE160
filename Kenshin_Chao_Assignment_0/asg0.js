@@ -37,6 +37,20 @@ function angleBetween(v1, v2){
   return Math.acos(dotpr/magnitudes) * (180 / Math.PI)
 }
 
+function areaTriangle(v1,v2){
+  
+  let cp = Vector3.cross(v1,v2);
+
+  let mag = cp.magnitude();
+  const area = mag/2;
+
+  return area;
+
+
+
+}
+
+
 function handleDrawEvent(){
   v1 = new Vector3([0,0,0])
   v2 = new Vector3([0,0,0])
@@ -115,6 +129,10 @@ function handleDrawOperationEvent(){
   }
   else if (option == "Angle Between"){
     console.log(angleBetween(v1,v2));
+
+  }
+  else if (option == "Area"){
+    console.log("Area of triangle: " + areaTriangle(v1,v2));
 
   }
   else if (option == "Magnitude"){
