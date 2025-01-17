@@ -1,5 +1,9 @@
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
+
+
+//https://kenshinchao.github.io/CSE160/Kenshin_Chao_Assignment_1/ColoredPoints.htm
+
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;
   uniform float u_Size;
