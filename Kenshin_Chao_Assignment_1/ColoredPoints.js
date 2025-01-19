@@ -7,7 +7,7 @@
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;
   uniform float u_Size;
-  
+
   void main() {
    gl_Position = a_Position;
     //gl_PointSize = 20.0;
@@ -71,14 +71,29 @@ function connectVariablesToGLSL(){
     }
 }
 
+function resetPreviewShape() {
+  if (g_selectedType === POINT) {
+    g_previewShape = new Point();
+  } else if (g_selectedType === TRIANGLE) {
+    g_previewShape = new Triangle();
+  } else if (g_selectedType === CIRCLE) {
+    g_previewShape = new Circle();
+  }
+
+  // Apply the current color and size to the preview shape
+  if (g_previewShape) {
+    g_previewShape.color = g_selectedColor.slice();
+    g_previewShape.size = g_selectedSize;
+    g_previewShape.position = [0, 0]; // Default to center of canvas initially
+  }
+}
+
 const POINT = 0;
 const TRIANGLE = 1;
 const CIRCLE = 2;
 let g_selectedColor =   [1.0,1.0,1.0,1.0];
 let g_selectedSize = 5;
 let g_selectedType = POINT;
-let g_rotationAngle = 0.0; // Rotation angle in degrees
-
 function addActionsForHtmlUI(){
   document.getElementById('green').onclick = function() {
     g_selectedColor = [0.0,1.0,0.0,1.0]; };
@@ -87,24 +102,38 @@ function addActionsForHtmlUI(){
     document.getElementById('clearButton').onclick = function() {
       g_shapesList = []; renderALLShapes();
     };
-  document.getElementById('pointButton').onclick = function() {g_selectedType = POINT;}
-  document.getElementById('triangleButton').onclick = function() {g_selectedType = TRIANGLE;}
-  document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;}
+  document.getElementById('pointButton').onclick = function() {g_selectedType = POINT;
+    resetPreviewShape();
+  }
+  document.getElementById('triangleButton').onclick = function() {g_selectedType = TRIANGLE;
+    resetPreviewShape();
+  }
+  document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;
+    resetPreviewShape();
+  }
     
   
   //slider events
-  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
-  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; });
-  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; });
+  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100;
+    resetPreviewShape();
+   });
+  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; 
+    resetPreviewShape();
+  });
+  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; 
+    resetPreviewShape();
+  });
   //size slider
-  document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
+  document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; 
+    resetPreviewShape();
+  });
   
 
 }
 
   
 
-
+let g_previewShape = null;
 function main() {
   setupWebGL();
 
@@ -117,6 +146,22 @@ function main() {
   canvas.onmousedown = click;
   //canvas.onmousemove = click;
   canvas.onmousemove = function(ev) {
+     [x, y] = convertCoordinatesEventToGL(ev);
+
+  if (!g_previewShape) {
+    if (g_selectedType == POINT) {
+      g_previewShape = new Point();
+    } else if (g_selectedType == TRIANGLE) {
+      g_previewShape = new Triangle();
+    } else if (g_selectedType == CIRCLE) {
+      g_previewShape = new Circle();
+    }
+
+    
+  }
+  renderALLShapes();
+  // Update the position of the preview shape
+  g_previewShape.position = [x, y];
     if (ev.buttons == 1){ //left click
       click(ev);
     }
@@ -192,6 +237,10 @@ function convertCoordinatesEventToGL(ev){
 
     g_shapesList[i].render();
 
+  }
+  if (g_previewShape) {
+    
+    g_previewShape.render();
   }
 
   var duration = performance.now() - startTime;
