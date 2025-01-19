@@ -209,7 +209,7 @@ var g_shapesList = [];
 // var g_points = [];  // The array for the position of a mouse press
 // var g_colors = [];  // The array to store the color of a point
 // var g_sizes = [];
-let poses = [[0.4,0.2] //positions for preset
+let poses = [[0.4,0.2]
 ,[0.5,0.1]
 ,[0.3,-0.1]
 ,[0.5,0.1]
