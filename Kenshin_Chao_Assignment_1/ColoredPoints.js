@@ -7,7 +7,7 @@
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;
   uniform float u_Size;
-
+  
   void main() {
    gl_Position = a_Position;
     //gl_PointSize = 20.0;
@@ -71,8 +71,14 @@ function connectVariablesToGLSL(){
     }
 }
 
+const POINT = 0;
+const TRIANGLE = 1;
+const CIRCLE = 2;
 let g_selectedColor =   [1.0,1.0,1.0,1.0];
 let g_selectedSize = 5;
+let g_selectedType = POINT;
+let g_rotationAngle = 0.0; // Rotation angle in degrees
+
 function addActionsForHtmlUI(){
   document.getElementById('green').onclick = function() {
     g_selectedColor = [0.0,1.0,0.0,1.0]; };
@@ -81,7 +87,9 @@ function addActionsForHtmlUI(){
     document.getElementById('clearButton').onclick = function() {
       g_shapesList = []; renderALLShapes();
     };
-
+  document.getElementById('pointButton').onclick = function() {g_selectedType = POINT;}
+  document.getElementById('triangleButton').onclick = function() {g_selectedType = TRIANGLE;}
+  document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;}
     
   
   //slider events
@@ -129,7 +137,15 @@ var g_shapesList = [];
 function click(ev) {
   [x,y] = convertCoordinatesEventToGL(ev);
    
-  let point = new Point();
+  let point;
+  if (g_selectedType == POINT){
+    point = new Point();
+
+  }else if (g_selectedType == TRIANGLE) {
+    point = new Triangle();
+  }else {
+    point = new Circle();
+  }
   point.position = [x,y];
   point.color = g_selectedColor.slice();
   point.size = g_selectedSize;
