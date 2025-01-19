@@ -76,6 +76,18 @@ function resetPreviewShape() {
     g_previewShape = new Point();
   } else if (g_selectedType === TRIANGLE) {
     g_previewShape = new Triangle();
+    if (g_flippedX == true){
+      g_previewShape.flippedH = true;
+    }
+    else {
+      g_previewShape.flippedH = false;
+    }
+    if (g_flippedY == true){
+      g_previewShape.flippedV = true;
+    }
+    else {
+      g_previewShape.flippedV = false;
+    }
   } else if (g_selectedType === CIRCLE) {
     g_previewShape = new Circle();
   }
@@ -94,11 +106,15 @@ const CIRCLE = 2;
 let g_selectedColor =   [1.0,1.0,1.0,1.0];
 let g_selectedSize = 5;
 let g_selectedType = POINT;
+let g_flippedX = false;
+let g_flippedY = false;
 function addActionsForHtmlUI(){
   document.getElementById('green').onclick = function() {
-    g_selectedColor = [0.0,1.0,0.0,1.0]; };
+    g_selectedColor = [0.0,1.0,0.0,1.0]; 
+    resetPreviewShape();};
   document.getElementById('red').onclick = function() {
-    g_selectedColor = [1.0,0.0,0.0,1.0]; };
+    g_selectedColor = [1.0,0.0,0.0,1.0]; 
+    resetPreviewShape();};
     document.getElementById('clearButton').onclick = function() {
       g_shapesList = []; renderALLShapes();
     };
@@ -111,7 +127,16 @@ function addActionsForHtmlUI(){
   document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;
     resetPreviewShape();
   }
-    
+  document.getElementById('flipHorizontalButton').onclick = function() {
+    g_flippedX = !g_flippedX;
+    resetPreviewShape();
+
+  }
+  document.getElementById('flipVerticalButton').onclick = function() {
+    g_flippedY = !g_flippedY;
+    resetPreviewShape();
+
+  }
   
   //slider events
   document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100;
@@ -157,7 +182,8 @@ function main() {
       g_previewShape = new Circle();
     }
 
-    
+    g_previewShape.color = g_selectedColor.slice();
+    g_previewShape.size = g_selectedSize;
   }
   renderALLShapes();
   // Update the position of the preview shape
@@ -179,15 +205,24 @@ var g_shapesList = [];
 // var g_colors = [];  // The array to store the color of a point
 // var g_sizes = [];
 
+
 function click(ev) {
   [x,y] = convertCoordinatesEventToGL(ev);
-   
+   console.log()
   let point;
   if (g_selectedType == POINT){
     point = new Point();
 
   }else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
+    if (g_flippedX) {
+      point.flippedH = g_flippedX; // Flip the triangle 
+    }
+    if (g_flippedY) {
+      point.flippedV = g_flippedY; // Flip the triangle 
+    }
+  
+  
   }else {
     point = new Circle();
   }
@@ -234,7 +269,7 @@ function convertCoordinatesEventToGL(ev){
   //var len = g_points.length
   var len = g_shapesList.length;
   for(var i = 0; i < len; i++) {
-
+    
     g_shapesList[i].render();
 
   }

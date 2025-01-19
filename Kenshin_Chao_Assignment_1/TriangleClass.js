@@ -5,14 +5,17 @@ class Triangle{
       this.position = [0.0,0.0,0.0];
       this.color = [1.0,1.0,1.0,1.0];
       this.size = 5.0;
+      this.flippedH = false;
+      this.flippedV = false;
     }
+
     render(){
       
       var xy = this.position;
       var rgba = this.color;
       var size = this.size;
   
-      
+     
       // var xy = g_points[i];
       // var rgba = g_colors[i];
       // var size = g_sizes[i];
@@ -24,10 +27,49 @@ class Triangle{
       
       //pass the size
       gl.uniform1f(u_Size, size);
+     
       
+
+    // // If flipped, invert the Y coordinates
+    // if (this.flipped) {
+    //   vertices = [
+    //     xy[0], xy[1],
+    //     xy[0] + d, xy[1],
+    //     xy[0], xy[1] - d,
+    //   ];
+    // }
       // Draw
       var d = this.size/200.0;
-      drawTriangle([xy[0],xy[1],xy[0]+d,xy[1],xy[0],xy[1]+d])
+      let vertices = [
+      xy[0], xy[1],
+      xy[0] + d, xy[1],
+      xy[0], xy[1] + d,
+    ];
+
+    if (this.flippedH && this.flippedV) {
+        vertices = [
+          xy[0], xy[1],
+          xy[0] - d, xy[1],
+          xy[0], xy[1] - d,
+        ];
+      }
+    else if (this.flippedH) {
+        vertices = [
+          xy[0], xy[1],
+          xy[0] - d, xy[1],
+          xy[0], xy[1] + d,
+        ];
+      }
+      else if (this.flippedV) {
+        vertices = [
+          xy[0], xy[1],
+          xy[0] + d, xy[1],
+          xy[0], xy[1] - d,
+        ];
+      }
+      
+  
+      drawTriangle(vertices)
     
  
     }
