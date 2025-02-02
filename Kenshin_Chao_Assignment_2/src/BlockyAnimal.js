@@ -239,6 +239,7 @@ function convertCoordinatesEventToGL(ev){
 
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT);
   //var len = g_points.length
   
 
@@ -246,22 +247,22 @@ function convertCoordinatesEventToGL(ev){
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
     body.matrix.translate(-.25, -.5, 0);
-    body.matrix.scale(1, 1, 1);
+    body.matrix.scale(.6, .6, .6);
     body.render();
 
-    var leftArm = new Cube();
-    leftArm.color = [1,1,0,1];
-    leftArm.matrix.setTranslate(.7, 0, 0);
-    leftArm.matrix.rotate(45, 0, 0, 1);
+    // var leftArm = new Cube();
+    // leftArm.color = [1,1,0,1];
+    // leftArm.matrix.setTranslate(.7, 0, 0);
     // leftArm.matrix.rotate(45, 0, 0, 1);
-    leftArm.matrix.scale(0.25, .7, .5);
-    leftArm.render();
+    // // leftArm.matrix.rotate(45, 0, 0, 1);
+    // leftArm.matrix.scale(0.25, .7, .5);
+    // leftArm.render();
     
     var hand = new Cube();
     hand.color = [1,0,1,1];
-    hand.matrix.translate(.6, -.2,-.3, 0);
-    hand.matrix.rotate(-30, 1, 0, 0);
-    hand.matrix.scale(0.3, .1, .5);
+    hand.matrix.setTranslate(.3, -.2,.2);
+    hand.matrix.rotate(0, 0, 0,1);
+    hand.matrix.scale(0.6, .2, .2);
     hand.render();
 
 
