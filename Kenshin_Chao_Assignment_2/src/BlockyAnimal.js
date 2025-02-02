@@ -120,6 +120,7 @@ let g_selectedType = POINT;
 let g_flippedX = false;
 let g_flippedY = false;
 let g_globalAngle = 0;
+let g_waveSlider = 0;
 function addActionsForHtmlUI(){
   document.getElementById('green').onclick = function() {
     g_selectedColor = [0.0,1.0,0.0,1.0]; 
@@ -171,6 +172,10 @@ function addActionsForHtmlUI(){
   // });
   document.getElementById('angleSlide').addEventListener('mousemove', function() {
     g_globalAngle = this.value; 
+    renderALLShapes();
+  });
+  document.getElementById('waveSlide').addEventListener('mousemove', function() {
+    g_waveSlider = this.value; 
     renderALLShapes();
   });
 
@@ -258,12 +263,98 @@ function convertCoordinatesEventToGL(ev){
     // leftArm.matrix.scale(0.25, .7, .5);
     // leftArm.render();
     
-    var hand = new Cube();
-    hand.color = [1,0,1,1];
-    hand.matrix.setTranslate(.3, -.2,.2);
-    hand.matrix.rotate(0, 0, 0,1);
-    hand.matrix.scale(0.6, .2, .2);
-    hand.render();
+    var lefthand = new Cube();
+    lefthand.color = [1, 0.6, 1, 1];
+    lefthand.matrix.setTranslate(-.15,-.3,.4);
+    lefthand.matrix.rotate(180, -15, 90,1);
+    lefthand.matrix.rotate(g_waveSlider, 0, 0,1);
+    lefthand.matrix.scale(0.3, .23, .3);
+    lefthand.render();
+
+    var righthand = new Cube();
+    righthand.color = [1, 0.6, 1, 1];
+    righthand.matrix.setTranslate(.25, -.3,.2);
+    righthand.matrix.rotate(-15, 0, 0,1);
+    righthand.matrix.rotate(g_waveSlider, 0, 0,1);
+    righthand.matrix.scale(0.3, .23, .3);
+    righthand.render();
+
+    var righteye = new Cube();
+    righteye.color = [0,0,0,1];
+    righteye.matrix.setTranslate(0.12, -.25,-.05);
+    righteye.matrix.rotate(0, 0, 0,1);
+  
+    righteye.matrix.scale(0.12, .25, .3);
+    righteye.render();
+    
+
+    var rightlight = new Cube();
+    rightlight.color = [1,1,1,1];
+    rightlight.matrix.setTranslate(0.115, -.1,-.06);
+    rightlight.matrix.rotate(0, 0, 0,1);
+  
+    rightlight.matrix.scale(0.055, .045, .3);
+    rightlight.render();
+
+
+
+    var lefteye = new Cube();
+    lefteye.color = [0,0,0,1];
+    lefteye.matrix.setTranslate(-0.15, -.25,-.05);
+    lefteye.matrix.rotate(0, 0, 0,1);
+  
+    lefteye.matrix.scale(0.12, .25, .3);
+    lefteye.render();
+
+    var leftlight = new Cube();
+    lefteye.color = [1,1,1,1];
+    lefteye.matrix.setTranslate(-0.156, -.1,-.06);
+    lefteye.matrix.rotate(0, 0, 0,1);
+  
+    lefteye.matrix.scale(0.055, .045, .3);
+    lefteye.render();
+
+    var mouth = new Cube();
+    mouth.color = [0,0,0,1];
+    mouth.matrix.setTranslate(0.02, -.34,-.05);
+    mouth.matrix.rotate(0, 0, 0,1);
+  
+    mouth.matrix.scale(0.06, .02, .3);
+    mouth.render();
+    
+    var lblush = new Cube();
+    lblush.color = [1,0,0,1];
+    lblush.matrix.setTranslate(0.2, -.32,-.05);
+    lblush.matrix.rotate(0, 0, 0,1);
+  
+    lblush.matrix.scale(0.09, .05, .3);
+    lblush.render();
+
+    var rblush = new Cube();
+    rblush.color = [1,0,0,1];
+    rblush.matrix.setTranslate(-0.2, -.32,-.05);
+    rblush.matrix.rotate(0, 0, 0,1);
+  
+    rblush.matrix.scale(0.09, .05, .3);
+    rblush.render();
+    
+
+        
+    var lLeg = new Cube();
+    lLeg.color = [1,0,1,1];
+    lLeg.matrix.setTranslate(-.05,-.6,.45);
+    lLeg.matrix.rotate(180, -10, 90,1);
+
+    lLeg.matrix.scale(0.35, .2, .3);
+    lLeg.render();
+
+    var rLeg = new Cube();
+    rLeg.color = [1,0,1,1];
+    rLeg.matrix.setTranslate(.2, -.6,.2);
+    rLeg.matrix.rotate(-15, 0, 0,1);
+    rLeg.matrix.scale(0.35, .2, .3);
+    rLeg.render();
+
 
 
 
