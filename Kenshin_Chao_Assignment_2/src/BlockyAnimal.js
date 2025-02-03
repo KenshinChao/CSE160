@@ -120,7 +120,9 @@ let g_selectedType = POINT;
 let g_flippedX = false;
 let g_flippedY = false;
 let g_globalAngle = 0;
-let g_waveSlider = 0;
+let g_armAngle = 0;
+let g_handAngle = 0;
+let g_Aanimation = false;
 function addActionsForHtmlUI(){
   document.getElementById('green').onclick = function() {
     g_selectedColor = [0.0,1.0,0.0,1.0]; 
@@ -140,6 +142,12 @@ function addActionsForHtmlUI(){
     // resetPreviewShape();
   }
   document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;
+    // resetPreviewShape();
+  }
+  document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
+    // resetPreviewShape();
+  }
+  document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
     // resetPreviewShape();
   }
 
@@ -174,10 +182,16 @@ function addActionsForHtmlUI(){
     g_globalAngle = this.value; 
     renderALLShapes();
   });
-  document.getElementById('waveSlide').addEventListener('mousemove', function() {
-    g_waveSlider = this.value; 
+  document.getElementById('armSlide').addEventListener('mousemove', function() {
+    g_armAngle = this.value; 
     renderALLShapes();
   });
+
+  document.getElementById('handSlide').addEventListener('mousemove', function() {
+    g_handAngle = this.value; 
+    renderALLShapes();
+  });
+
 
 
   
@@ -194,8 +208,7 @@ function main() {
 
   addActionsForHtmlUI();
 
-  // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = click;
+
   //canvas.onmousemove = click;
   canvas.onmousemove = function(ev) {
  
@@ -210,14 +223,31 @@ function main() {
 
   // // Clear <canvas>
   // gl.clear(gl.COLOR_BUFFER_BIT); 
-  renderALLShapes();
+  //renderALLShapes();
 
+  requestAnimationFrame(tick);
 
 }
 
-function click(ev) {
-  [x,y] = convertCoordinatesEventToGL(ev);
+var g_startTime = performance.now()/1000.0;
+var g_seconds = performance.now()/1000.0-g_startTime;
+
+function tick() {
+  g_seconds = performance.now()/1000.0-g_startTime;
+  console.log(g_seconds);
+
+  updateAnimationAngles();
+
   renderALLShapes();
+
+  requestAnimationFrame(tick);
+
+}
+
+function updateAnimationAngles() {
+  if (g_Aanimation){
+    g_armAngle = (15*Math.sin(g_seconds));
+  }
 }
  //var g_shapesList = [];
 // var g_points = [];  // The array for the position of a mouse press
@@ -263,21 +293,58 @@ function convertCoordinatesEventToGL(ev){
     // leftArm.matrix.scale(0.25, .7, .5);
     // leftArm.render();
     
+    var leftarm = new Cube();
+    leftarm.color = [1, 0.6, 1, 1];
+    leftarm.matrix.setTranslate(-.15,-.3,.4);
+    leftarm.matrix.rotate(180, 0, 90,1);
+    leftarm.matrix.rotate(g_armAngle, 0, 0,1);
+    // if (g_Aanimation){
+    //     leftarm.matrix.rotate(25*Math.sin(g_seconds), 0, 0,1);
+    // }
+    // else {
+    //   leftarm.matrix.rotate(g_armAngle, 0, 0, 1);
+    // }
+  
+    var lArmCoord = new Matrix4(leftarm.matrix);
+    leftarm.matrix.scale(0.3, .23, .3);
+    leftarm.render();
+
     var lefthand = new Cube();
     lefthand.color = [1, 0.6, 1, 1];
-    lefthand.matrix.setTranslate(-.15,-.3,.4);
-    lefthand.matrix.rotate(180, -15, 90,1);
-    lefthand.matrix.rotate(g_waveSlider, 0, 0,1);
+    lefthand.matrix = lArmCoord;
+    lefthand.matrix.translate(.3, 0,0);
+    lefthand.matrix.rotate(10, 0, 0,1);
+    lefthand.matrix.rotate(g_handAngle, 0, 0, 1);
     lefthand.matrix.scale(0.3, .23, .3);
     lefthand.render();
 
+
+    var rightarm = new Cube();
+    rightarm.color = [1, 0.6, 1, 1];
+    rightarm.matrix.setTranslate(.2, -.3,.2);
+    rightarm.matrix.rotate(-15, 0, 0,1);
+    rightarm.matrix.rotate(g_armAngle, 0, 0,1);
+  //   if (g_Aanimation){
+  //     rightarm.matrix.rotate(15*Math.sin(g_seconds), 0, 0,1);
+  // }
+  // else {
+  //   rightarm.matrix.rotate(g_armSlider, 0, 0,1);
+  // }
+   
+    var rArmCoord = new Matrix4(rightarm.matrix);
+    rightarm.matrix.scale(0.3, .23, .3);
+    rightarm.render();
+    
+    
     var righthand = new Cube();
     righthand.color = [1, 0.6, 1, 1];
-    righthand.matrix.setTranslate(.25, -.3,.2);
-    righthand.matrix.rotate(-15, 0, 0,1);
-    righthand.matrix.rotate(g_waveSlider, 0, 0,1);
-    righthand.matrix.scale(0.3, .23, .3);
-    righthand.render();
+    righthand.matrix = rArmCoord;
+    righthand.matrix.translate(.3, 0,0);
+     righthand.matrix.rotate(10, 0, 0,1);
+    righthand.matrix.rotate(g_handAngle, 0, 0,1);
+     righthand.matrix.scale(0.3, .23, .3);
+     righthand.render();
+
 
     var righteye = new Cube();
     righteye.color = [0,0,0,1];
