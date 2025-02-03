@@ -111,6 +111,8 @@ function connectVariablesToGLSL(){
 //   }
 // }
 
+
+//there are 2 arms, 2 hands, and 2 eyes, and 2 legs. 8 body parts.
 const POINT = 0;
 const TRIANGLE = 1;
 const CIRCLE = 2;
@@ -123,27 +125,29 @@ let g_globalAngle = 0;
 let g_armAngle = 0;
 let g_handAngle = 0;
 let g_Aanimation = false;
+let g_legAngle = 0;
+let mouthMove = false;
 function addActionsForHtmlUI(){
-  document.getElementById('green').onclick = function() {
-    g_selectedColor = [0.0,1.0,0.0,1.0]; 
-    // resetPreviewShape();
-    };
-  document.getElementById('red').onclick = function() {
-    g_selectedColor = [1.0,0.0,0.0,1.0]; 
-    // resetPreviewShape();
-    };
-    document.getElementById('clearButton').onclick = function() {
-       renderALLShapes();
-    };
-  document.getElementById('pointButton').onclick = function() {g_selectedType = POINT;
-    // resetPreviewShape();
-  }
-  document.getElementById('triangleButton').onclick = function() {g_selectedType = TRIANGLE;
-    // resetPreviewShape();
-  }
-  document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;
-    // resetPreviewShape();
-  }
+  // document.getElementById('green').onclick = function() {
+  //   g_selectedColor = [0.0,1.0,0.0,1.0]; 
+  //   // resetPreviewShape();
+  //   };
+  // document.getElementById('red').onclick = function() {
+  //   g_selectedColor = [1.0,0.0,0.0,1.0]; 
+  //   // resetPreviewShape();
+  //   };
+  //   document.getElementById('clearButton').onclick = function() {
+  //      renderALLShapes();
+  //   };
+  // document.getElementById('pointButton').onclick = function() {g_selectedType = POINT;
+  //   // resetPreviewShape();
+  // }
+  // document.getElementById('triangleButton').onclick = function() {g_selectedType = TRIANGLE;
+  //   // resetPreviewShape();
+  // }
+  // document.getElementById('circleButton').onclick = function() {g_selectedType = CIRCLE;
+  //   // resetPreviewShape();
+  // }
   document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
     // resetPreviewShape();
   }
@@ -152,27 +156,27 @@ function addActionsForHtmlUI(){
   }
 
 
-  document.getElementById('flipHorizontalButton').onclick = function() {
-    g_flippedX = !g_flippedX;
-    resetPreviewShape();
+  // document.getElementById('flipHorizontalButton').onclick = function() {
+  //   g_flippedX = !g_flippedX;
+  //   resetPreviewShape();
 
-  }
-  document.getElementById('flipVerticalButton').onclick = function() {
-    g_flippedY = !g_flippedY;
-    resetPreviewShape();
+  // }
+  // document.getElementById('flipVerticalButton').onclick = function() {
+  //   g_flippedY = !g_flippedY;
+  //   resetPreviewShape();
 
-  }
+  // }
   
-  //slider events
-  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100;
-    resetPreviewShape();
-   });
-  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; 
-    resetPreviewShape();
-  });
-  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; 
-    resetPreviewShape();
-  });
+  // //slider events
+  // document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100;
+  //   resetPreviewShape();
+  //  });
+  // document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; 
+  //   resetPreviewShape();
+  // });
+  // document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; 
+  //   resetPreviewShape();
+  // });
 
   // document.getElementById('angleSlide').addEventListener('mouseup', function() {
   //   g_globalAngle = this.value; 
@@ -180,16 +184,16 @@ function addActionsForHtmlUI(){
   // });
   document.getElementById('angleSlide').addEventListener('mousemove', function() {
     g_globalAngle = this.value; 
-    renderALLShapes();
+    renderScene();
   });
   document.getElementById('armSlide').addEventListener('mousemove', function() {
     g_armAngle = this.value; 
-    renderALLShapes();
+    renderScene();
   });
 
   document.getElementById('handSlide').addEventListener('mousemove', function() {
     g_handAngle = this.value; 
-    renderALLShapes();
+    renderScene();
   });
 
 
@@ -198,7 +202,6 @@ function addActionsForHtmlUI(){
 
 }
 
-  
 
 // let g_previewShape = null;
 function main() {
@@ -227,6 +230,28 @@ function main() {
 
   requestAnimationFrame(tick);
 
+  renderScene();
+
+}
+let log = document.querySelector("#log");
+document.addEventListener("click", click);
+
+function click(ev){
+  [x,y] = convertCoordinatesEventToGL(ev);
+  if (y < .9 && ev.shiftKey == false){
+  g_globalAngle = x*180;
+  }
+  log.textContent = ``;
+  if (ev.shiftKey == true ){
+    log.textContent = `:( ): `
+    if (mouthMove){
+      mouthMove = false;
+    }
+    else {
+    mouthMove = true;
+    }
+  }
+  
 }
 
 var g_startTime = performance.now()/1000.0;
@@ -234,21 +259,29 @@ var g_seconds = performance.now()/1000.0-g_startTime;
 
 function tick() {
   g_seconds = performance.now()/1000.0-g_startTime;
-  console.log(g_seconds);
+  //console.log(g_seconds);
 
   updateAnimationAngles();
 
-  renderALLShapes();
+  renderScene();
 
   requestAnimationFrame(tick);
 
 }
 
+var g_mouthAngle = 0;
 function updateAnimationAngles() {
   if (g_Aanimation){
     g_armAngle = (15*Math.sin(g_seconds));
+    g_legAngle = (5*Math.sin(g_seconds));
+  }
+  if (mouthMove){
+    g_mouthAngle = 45*Math.sin(g_seconds);
+    
   }
 }
+
+
  //var g_shapesList = [];
 // var g_points = [];  // The array for the position of a mouse press
 // var g_colors = [];  // The array to store the color of a point
@@ -266,7 +299,7 @@ function convertCoordinatesEventToGL(ev){
 
 
 }
-  function renderALLShapes(){
+  function renderScene(){
     var startTime = performance.now();
 
     var globalRotMat= new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -278,6 +311,36 @@ function convertCoordinatesEventToGL(ev){
   //var len = g_points.length
   
 
+
+  if (g_Aanimation){
+  var K = 8;
+for (var i = 1; i < K; i++){
+  var c = new Cube();
+  c.matrix.translate(-.9,Math.random()+i/K-1,.8);
+  c.matrix.scale(.02,.05,.02)
+  c.render();
+}
+var K = 8;
+for (var i = 1; i < K; i++){
+  var c = new Cube();
+  c.matrix.translate(.9,Math.random()+i/K-.2,.5);
+  c.matrix.scale(.02,.05,.02)
+  c.render();
+}
+for (var i = 1; i < K; i++){
+  var c = new Cube();
+  c.matrix.translate(.2,Math.random()+i/K-.5,.4);
+  c.matrix.scale(.02,.05,.02)
+  c.render();
+}
+var K = 4;
+for (var i = 1; i < K; i++){
+  var c = new Cube();
+  c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
+  c.matrix.scale(.02,.05,.02)
+  c.render();
+}
+  }
    
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
@@ -381,13 +444,22 @@ function convertCoordinatesEventToGL(ev){
     lefteye.matrix.scale(0.055, .045, .3);
     lefteye.render();
 
-    var mouth = new Cube();
-    mouth.color = [0,0,0,1];
-    mouth.matrix.setTranslate(0.02, -.34,-.05);
-    mouth.matrix.rotate(0, 0, 0,1);
+    var lmouth = new Cube();
+    lmouth.color = [0,0,0,1];
+    lmouth.matrix.setTranslate(0.05, -.32,-.05);
+    lmouth.matrix.rotate(180+g_mouthAngle, 0, 0,1);
   
-    mouth.matrix.scale(0.06, .02, .3);
-    mouth.render();
+    lmouth.matrix.scale(0.06, .02, .3);
+    lmouth.render();
+
+    var rmouth = new Cube();
+    rmouth.color = [0,0,0,1];
+    rmouth.matrix.setTranslate(0.05, -.34,-.05);
+    rmouth.matrix.rotate(0-g_mouthAngle, 0, 0,1);
+  
+    rmouth.matrix.scale(0.06, .02, .3);
+    rmouth.render();
+    
     
     var lblush = new Cube();
     lblush.color = [1,0,0,1];
@@ -408,19 +480,37 @@ function convertCoordinatesEventToGL(ev){
 
         
     var lLeg = new Cube();
-    lLeg.color = [1,0,1,1];
-    lLeg.matrix.setTranslate(-.05,-.6,.45);
-    lLeg.matrix.rotate(180, -10, 90,1);
-
+    lLeg.color = [.9,.34,1,1];
+    lLeg.matrix.setTranslate(-.2,-.45,.2);
+    lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
+    var lLegCoords = new Matrix4(lLeg.matrix);
     lLeg.matrix.scale(0.35, .2, .3);
     lLeg.render();
 
     var rLeg = new Cube();
-    rLeg.color = [1,0,1,1];
-    rLeg.matrix.setTranslate(.2, -.6,.2);
-    rLeg.matrix.rotate(-15, 0, 0,1);
+    rLeg.color = [.9,.34,1,1];
+    rLeg.matrix.setTranslate(.1, -.45,.2);
+    rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
+    var rLegCoords = new Matrix4(rLeg.matrix);
     rLeg.matrix.scale(0.35, .2, .3);
     rLeg.render();
+
+    var lFoot = new Cube();
+    lFoot.color = [1,0,1,1];
+    lFoot.matrix = lLegCoords;
+    lFoot.matrix.translate(0.35, .2,0);
+    lFoot.matrix.rotate(270, 0, 0,1);
+    lFoot.matrix.scale(0.3, .1, .3);
+    lFoot.render();
+
+    
+    var rFoot = new Cube();
+    rFoot.color = [1,0,1,1];
+    rFoot.matrix = rLegCoords;
+    rFoot.matrix.translate(.35, .3,0);
+    rFoot.matrix.rotate(270, 0, 0,1);
+    rFoot.matrix.scale(0.3, .1, .3);
+    rFoot.render();
 
 
 
@@ -431,6 +521,8 @@ function convertCoordinatesEventToGL(ev){
   var duration = performance.now() - startTime;
   sendTextToHTML(" ms: " + Math.floor(duration) + " fps: " + Math.floor(10000/duration)/10, "numdot");
 }
+
+
 
 function sendTextToHTML(text, htmlID){
   var htmlElm = document.getElementById(htmlID);

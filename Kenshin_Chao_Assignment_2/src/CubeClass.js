@@ -50,6 +50,8 @@ class Cube{
   }
 
   
+
+
 function drawTriangle3D(vertices) {
 
   var n = 3; // The number of vertices
