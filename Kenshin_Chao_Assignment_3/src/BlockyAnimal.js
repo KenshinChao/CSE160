@@ -25,10 +25,20 @@ var FSHADER_SOURCE =`
   varying vec2 v_UV;
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
+  uniform int u_whichTexture;
   void main() {
-    gl_FragColor = u_FragColor; 
-    gl_FragColor = vec4(v_UV,1.0,1.0);
-    gl_FragColor = texture2D(u_Sampler0, v_UV);
+
+    if (u_whichTexture == -2){
+
+      gl_FragColor = u_FragColor; 
+  } else if(u_whichTexture == -1){
+      gl_FragColor = vec4(v_UV,1.0,1.0);
+  } else if (u_whichTexture == 0){
+    
+      gl_FragColor = texture2D(u_Sampler0, v_UV);
+  } else {
+    gl_FragColor = vec4(1,.2,.2,1);
+  }
   }`
 //Global Variables
 let canvas;
@@ -42,6 +52,7 @@ let u_ProjectionMatrix;
 let u_ViewMatrix;
 let u_GlobalRotateMatrix;
 let u_Sampler0;
+let u_whichTexture; 
 function setupWebGL(){
  // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
@@ -76,6 +87,12 @@ function connectVariablesToGLSL(){
     a_UV = gl.getAttribLocation(gl.program, 'a_UV');
     if (!a_UV) {
       console.log('Failed to get the storage location of a_UV');
+      return;
+    }
+
+    u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
+    if (!u_whichTexture) {
+      console.log('Failed to get the storage location of u_whichTexture');
       return;
     }
     // Get the storage location of u_FragColor
@@ -115,6 +132,8 @@ function connectVariablesToGLSL(){
       console.log('Failed to get the storage location of u_Sampler0');
       return;
     }
+
+
 
     var identityM = new Matrix4();
     gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
@@ -200,7 +219,6 @@ function addActionsForHtmlUI(){
 }
 
 function initTextures(){
-
  
   var image = new Image();
   if (!image){
@@ -342,6 +360,15 @@ function convertCoordinatesEventToGL(ev){
   function renderScene(){
     var startTime = performance.now();
 
+    var projMat = new Matrix4();
+    gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
+
+    var viewMat = new Matrix4();
+    gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
+
+    var globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+    gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
+
     // var globalRotMat= new Matrix4().rotate(g_globalAngle, 0, 1, 0);
     // gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);  
 
@@ -390,6 +417,7 @@ for (var i = 1; i < K; i++){
    
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
+    body.textureNum = 0;
     body.matrix.translate(-.25, -.5, 0);
     body.matrix.scale(.6, .6, .6);
     body.render();
