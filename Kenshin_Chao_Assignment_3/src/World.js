@@ -409,13 +409,14 @@ function convertCoordinatesEventToGL(ev){
     [1, 1, 1, 1, 1, 1, 1]
 ];
   function drawMap(){
-    for (x = 0 ; x < 16 ; x++){
-      for (y = 0; y < 16; y++){
+    var block = new Cube();
+    for (x = 0 ; x < 32 ; x++){
+      for (y = 0; y < 32; y++){
         if (x == 0 || x == 31 || y == 0 || y == 31){
-          var block = new Cube();
+          //var block = new Cube();
           block.color = [1,1,1,1];
-  
-          block.matrix.translate(0, -1, 0);
+          //block.textureNum = 1
+          block.matrix.setTranslate(0, -1, 0);
           block.matrix.scale(.4,.4,.4)
           block.matrix.translate(x-16, 0, y-16);
           block.renderfast();
@@ -501,7 +502,7 @@ for (var i = 1; i < K; i++){
     sky.renderfast();    
 
     var groundPlane = new Cube();
-    groundPlane.textureNum = -2;
+    groundPlane.textureNum = -1;
     groundPlane.matrix.translate(-5,-2,-5);
     groundPlane.matrix.scale(100, 1, 100);
     groundPlane.renderfast();
@@ -509,7 +510,7 @@ for (var i = 1; i < K; i++){
 
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
-    body.textureNum = -2;
+    body.textureNum = 0;
     body.matrix.translate(-.25, -.5, 0);
     body.matrix.scale(.6, .6, .6);
     body.renderfast ();

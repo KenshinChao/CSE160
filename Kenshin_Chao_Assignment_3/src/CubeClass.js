@@ -8,6 +8,36 @@ class Cube{
       // this.segments = 10;
       this.matrix = new Matrix4();
       this.textureNum = -2;
+      this.cubeVerts32 = new Float32Array([
+        0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0,
+        0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0,
+        0.0,1.0,0.0, 0.0,1.0,1.0, 1.0,1.0,0.0,
+        1.0,1.0,0.0, 1.0,1.0,1, 0.0,1.0,1.0,
+        1.0,1.0,0.0, 1.0,1.0,1.0, 1,0.0,1.0,
+        1.0,0.0,0.0, 1.0,1.0,0.0, 1,0,1.0,
+        0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,0.0,
+        1.0,0.0,0.0, 1.0,0.0,1.0, 0.0,0.0,1.0,
+        0.0,0.0,0.0, 0.0,0.0,1.0, 0,1.0,0.0,
+        0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0,
+        0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0,
+        0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0
+
+      ]);
+      this.cubeVerts = 
+      [0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0,
+        0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0,
+        0.0,1.0,0.0, 0.0,1.0,1.0, 1.0,1.0,0.0,
+        1.0,1.0,0.0, 1.0,1.0,1, 0.0,1.0,1.0,
+        1.0,1.0,0.0, 1.0,1.0,1.0, 1,0.0,1.0,
+        1.0,0.0,0.0, 1.0,1.0,0.0, 1,0,1.0,
+        0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,0.0,
+        1.0,0.0,0.0, 1.0,0.0,1.0, 0.0,0.0,1.0,
+        0.0,0.0,0.0, 0.0,0.0,1.0, 0,1.0,0.0,
+        0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0,
+        0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0,
+        0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0
+        
+      ]
     }
     render(){
       
@@ -101,8 +131,28 @@ class Cube{
       drawTriangle3DUVALL(allverts,alluvs);
 
     }
-  
+   renderfaster(){
+  var rgba = this.color;
+
+  gl.uniform1i(u_whichTexture, -2);
+
+  gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+  gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+  if (g_vertexBuffer == null){
+    initTriangle3D();
   }
+
+  gl.bufferData(gl.ARRAY_BUFFER, this.cubeVerts32, gl.DYNAMIC_DRAW);
+
+  gl.drawArrays(gl.TRIANGLES, 0, 36)
+
+
+}
+  }
+
+
 
   
 
@@ -113,10 +163,8 @@ function drawTriangle3D(vertices) {
   //console.log("n " + n)
   // Create a buffer object
   
-  var vertexBuffer = gl.createBuffer();
-  if (!vertexBuffer) {
-    console.log('Failed to create the buffer object');
-    return -1;
+  if (g_vertexBuffer == null){
+    initTriangle3D();
   }
 
   // Bind the buffer object to target
