@@ -25,6 +25,7 @@ var FSHADER_SOURCE =`
   varying vec2 v_UV;
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
+  uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
   void main() {
 
@@ -136,10 +137,11 @@ function connectVariablesToGLSL(){
 
 
     var identityM = new Matrix4();
+    
     gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
-    gl.uniformMatrix4fv(u_ProjectionMatrix, false, identityM.elements);
-    gl.uniformMatrix4fv(u_ViewMatrix, false, identityM.elements);
-    gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, identityM.elements);
+    // gl.uniformMatrix4fv(u_ProjectionMatrix, false, identityM.elements);
+    // gl.uniformMatrix4fv(u_ViewMatrix, false, identityM.elements);
+    // gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, identityM.elements);
 
   }
 
@@ -182,12 +184,14 @@ let g_selectedSize = 5;
 let g_selectedType = POINT;
 let g_flippedX = false;
 let g_flippedY = false;
-let g_globalAngle = 0;
+let g_globalAnglex = 0;
+let g_globalAngley = 0;
 let g_armAngle = 0;
 let g_handAngle = 0;
 let g_Aanimation = false;
 let g_legAngle = 0;
 let mouthMove = false;
+let g_camera = new Camera();
 function addActionsForHtmlUI(){
   // document.getElementById('green').onclick = function() {
   document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
@@ -269,6 +273,8 @@ function main() {
 
   addActionsForHtmlUI();
 
+  document.onkeydown = keydown;
+
   initTextures();
   //canvas.onmousemove = click;
   canvas.onmousemove = function(ev) {
@@ -287,7 +293,7 @@ function main() {
   //renderALLShapes();
 
   requestAnimationFrame(tick);
-
+  
   renderScene();
 
 }
@@ -297,7 +303,10 @@ document.addEventListener("click", click);
 function click(ev){
   [x,y] = convertCoordinatesEventToGL(ev);
   if (y < .9 && ev.shiftKey == false){
-  g_globalAngle = x*180;
+  g_globalAnglex = x*180;
+  g_globalAngley = y*180;
+  console.log(g_globalAngley)
+  
   }
   log.textContent = ``;
   if (ev.shiftKey == true ){
@@ -339,6 +348,32 @@ function updateAnimationAngles() {
   }
 }
 
+function keydown(ev){
+  if (ev.key === 'd'){
+    g_camera.right();
+  }else if (ev.key === 'a'){
+    g_camera.left();
+  } else if (ev.key === 'w'){ //up arrow
+    g_camera.forward();
+  }else if (ev.key === 's'){ //down arrow
+    g_camera.back();
+  }else if (ev.key === 'q'){
+    //rotate camera left
+    g_camera.rotateRight();
+
+  }
+  else if (ev.key === 'e'){
+    //rotate camera right
+    g_camera.rotateLeft();
+  }
+  
+  
+  renderScene();
+  console.log(ev.keyCode);
+  
+}
+
+
 
  //var g_shapesList = [];
 // var g_points = [];  // The array for the position of a mouse press
@@ -358,24 +393,56 @@ function convertCoordinatesEventToGL(ev){
 
 }
 
-  var g_eye = [0,0,3];
-  var g_at = [0,0,-100];
-  var g_up = [0,1,0];
+  // var g_eye = [0,0,3];
+  // var g_at = [0,0,-100];
+  // var g_up = [0,1,0];
+
+ 
+  var g_map = [
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1]
+];
+  function drawMap(){
+    for (x = 0 ; x < 16 ; x++){
+      for (y = 0; y < 16; y++){
+        if (x == 0 || x == 31 || y == 0 || y == 31){
+          var block = new Cube();
+          block.color = [1,1,1,1];
+  
+          block.matrix.translate(0, -1, 0);
+          block.matrix.scale(.4,.4,.4)
+          block.matrix.translate(x-16, 0, y-16);
+          block.renderfast();
+        }
+      }
+    }
+  }
 
   function renderScene(){
     var startTime = performance.now();
 
     var projMat = new Matrix4();
+
     projMat.setPerspective(60, 1*canvas.width/canvas.height, 1, 100);
     gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
     var viewMat = new Matrix4();
-    viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]); //eye, at, up
+    viewMat.setLookAt(
+      g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2],
+    g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
+    g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
+    //viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]); //eye, at, up
     //viewMat.setLookAt(0,0,3, 0,0,-100,  0,1,0);
     gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
 
-    var globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+    var globalRotMat = new Matrix4().rotate(g_globalAnglex, g_globalAngley, 1, 0);
     gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
 
     // var globalRotMat= new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -391,6 +458,8 @@ function convertCoordinatesEventToGL(ev){
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clear(gl.COLOR_BUFFER_BIT);
   //var len = g_points.length
+
+  drawMap()
   
 
 
@@ -400,36 +469,50 @@ for (var i = 1; i < K; i++){
   var c = new Cube();
   c.matrix.translate(-.9,Math.random()+i/K-1,.8);
   c.matrix.scale(.02,.05,.02)
-  c.render();
+  c.renderfast();
 }
 var K = 8;
 for (var i = 1; i < K; i++){
   var c = new Cube();
   c.matrix.translate(.9,Math.random()+i/K-.2,.5);
   c.matrix.scale(.02,.05,.02)
-  c.render();
+  c.renderfast();
 }
 for (var i = 1; i < K; i++){
   var c = new Cube();
   c.matrix.translate(.2,Math.random()+i/K-.5,.4);
   c.matrix.scale(.02,.05,.02)
-  c.render();
+  c.renderfast();
 }
 var K = 4;
 for (var i = 1; i < K; i++){
   var c = new Cube();
   c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
   c.matrix.scale(.02,.05,.02)
-  c.render();
+  c.renderfast();
 }
   }
    
+    var sky = new Cube();
+    sky.color = [1.0, 0.0, 0.0, 1.0];
+    sky.textureNum = 0;
+    sky.matrix.scale(100,100,100);
+    sky.matrix.translate(-0.5,-0.5,-0.5);
+    sky.renderfast();    
+
+    var groundPlane = new Cube();
+    groundPlane.textureNum = -2;
+    groundPlane.matrix.translate(-5,-2,-5);
+    groundPlane.matrix.scale(100, 1, 100);
+    groundPlane.renderfast();
+
+
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
-    body.textureNum = 0;
+    body.textureNum = -2;
     body.matrix.translate(-.25, -.5, 0);
     body.matrix.scale(.6, .6, .6);
-    body.render();
+    body.renderfast ();
 
     // var leftArm = new Cube();
     // leftArm.color = [1,1,0,1];
@@ -453,7 +536,7 @@ for (var i = 1; i < K; i++){
   
     var lArmCoord = new Matrix4(leftarm.matrix);
     leftarm.matrix.scale(0.3, .23, .3);
-    leftarm.render();
+    leftarm.renderfast();
 
     var lefthand = new Cube();
     lefthand.color = [1, 0.6, 1, 1];
@@ -462,7 +545,7 @@ for (var i = 1; i < K; i++){
     lefthand.matrix.rotate(10, 0, 0,1);
     lefthand.matrix.rotate(g_handAngle, 0, 0, 1);
     lefthand.matrix.scale(0.3, .23, .3);
-    lefthand.render();
+    lefthand.renderfast();
 
 
     var rightarm = new Cube();
@@ -479,7 +562,7 @@ for (var i = 1; i < K; i++){
    
     var rArmCoord = new Matrix4(rightarm.matrix);
     rightarm.matrix.scale(0.3, .23, .3);
-    rightarm.render();
+    rightarm.renderfast();
     
     
     var righthand = new Cube();
@@ -489,7 +572,7 @@ for (var i = 1; i < K; i++){
      righthand.matrix.rotate(10, 0, 0,1);
     righthand.matrix.rotate(g_handAngle, 0, 0,1);
      righthand.matrix.scale(0.3, .23, .3);
-     righthand.render();
+     righthand.renderfast();
 
 
     var righteye = new Cube();
@@ -498,7 +581,7 @@ for (var i = 1; i < K; i++){
     righteye.matrix.rotate(0, 0, 0,1);
   
     righteye.matrix.scale(0.12, .25, .3);
-    righteye.render();
+    righteye.renderfast();
     
 
     var rightlight = new Cube();
@@ -507,7 +590,7 @@ for (var i = 1; i < K; i++){
     rightlight.matrix.rotate(0, 0, 0,1);
   
     rightlight.matrix.scale(0.055, .045, .3);
-    rightlight.render();
+    rightlight.renderfast();
 
 
 
@@ -517,7 +600,7 @@ for (var i = 1; i < K; i++){
     lefteye.matrix.rotate(0, 0, 0,1);
   
     lefteye.matrix.scale(0.12, .25, .3);
-    lefteye.render();
+    lefteye.renderfast();
 
     var leftlight = new Cube();
     lefteye.color = [1,1,1,1];
@@ -525,7 +608,7 @@ for (var i = 1; i < K; i++){
     lefteye.matrix.rotate(0, 0, 0,1);
   
     lefteye.matrix.scale(0.055, .045, .3);
-    lefteye.render();
+    lefteye.renderfast();
 
     var lmouth = new Cube();
     lmouth.color = [0,0,0,1];
@@ -533,7 +616,7 @@ for (var i = 1; i < K; i++){
     lmouth.matrix.rotate(180+g_mouthAngle, 0, 0,1);
   
     lmouth.matrix.scale(0.06, .02, .3);
-    lmouth.render();
+    lmouth.renderfast();
 
     var rmouth = new Cube();
     rmouth.color = [0,0,0,1];
@@ -541,7 +624,7 @@ for (var i = 1; i < K; i++){
     rmouth.matrix.rotate(0-g_mouthAngle, 0, 0,1);
   
     rmouth.matrix.scale(0.06, .02, .3);
-    rmouth.render();
+    rmouth.renderfast();
     
     
     var lblush = new Cube();
@@ -550,7 +633,7 @@ for (var i = 1; i < K; i++){
     lblush.matrix.rotate(0, 0, 0,1);
   
     lblush.matrix.scale(0.09, .05, .3);
-    lblush.render();
+    lblush.renderfast();
 
     var rblush = new Cube();
     rblush.color = [1,0,0,1];
@@ -558,7 +641,7 @@ for (var i = 1; i < K; i++){
     rblush.matrix.rotate(0, 0, 0,1);
   
     rblush.matrix.scale(0.09, .05, .3);
-    rblush.render();
+    rblush.renderfast();
     
 
         
@@ -568,7 +651,7 @@ for (var i = 1; i < K; i++){
     lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
     var lLegCoords = new Matrix4(lLeg.matrix);
     lLeg.matrix.scale(0.35, .2, .3);
-    lLeg.render();
+    lLeg.renderfast();
 
     var rLeg = new Cube();
     rLeg.color = [.9,.34,1,1];
@@ -576,7 +659,7 @@ for (var i = 1; i < K; i++){
     rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
     var rLegCoords = new Matrix4(rLeg.matrix);
     rLeg.matrix.scale(0.35, .2, .3);
-    rLeg.render();
+    rLeg.renderfast();
 
     var lFoot = new Cube();
     lFoot.color = [1,0,1,1];
@@ -584,7 +667,7 @@ for (var i = 1; i < K; i++){
     lFoot.matrix.translate(0.35, .2,0);
     lFoot.matrix.rotate(270, 0, 0,1);
     lFoot.matrix.scale(0.3, .1, .3);
-    lFoot.render();
+    lFoot.renderfast();
 
     
     var rFoot = new Cube();
@@ -593,7 +676,7 @@ for (var i = 1; i < K; i++){
     rFoot.matrix.translate(.35, .3,0);
     rFoot.matrix.rotate(270, 0, 0,1);
     rFoot.matrix.scale(0.3, .1, .3);
-    rFoot.render();
+    rFoot.renderfast();
 
 
 

@@ -23,31 +23,83 @@ class Cube{
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
     //front face
-    drawTriangle3DUV([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0], [1,0,0,1,-1,1]);
+    drawTriangle3DUV([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0], [0,0, 1,1, 1,0]);
     // drawTriangle3D([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0], );
-    drawTriangle3DUV([0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0], [1,0,0,1,-1,1]);
+    drawTriangle3DUV([0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0], [0,0, 0,1, 1,1]);
     
     //draw other sides. 
     //top
-    drawTriangle3DUV([0.0,1.0,0.0, 0.0,1.0,1.0, 1.0,1.0,0.0],[1,0,0,1,-1,1]);
-    drawTriangle3D([1.0,1.0,0.0, 1.0,1.0,1, 0.0,1.0,1.0]);
+    drawTriangle3DUV([0.0,1.0,0.0, 0.0,1.0,1.0, 1.0,1.0,0.0],[0,1, 0,0, 1,1]);
+    drawTriangle3DUV([1.0,1.0,0.0, 1.0,1.0,1, 0.0,1.0,1.0], [1,1, 1,0, 0,0]);
     //right side 
     gl.uniform4f(u_FragColor, rgba[0]*.9,rgba[1]*.9,rgba[2]*.9, rgba[3]);
-    drawTriangle3DUV([1.0,1.0,0.0, 1.0,1.0,1.0, 1,0.0,1.0], [1,0,0,1,-1,1]);
-    drawTriangle3D([1.0,0.0,0.0, 1.0,1.0,0.0, 1,0,1.0]);
+    drawTriangle3DUV([1.0,1.0,0.0, 1.0,1.0,1.0, 1,0.0,1.0], [1,1, 0,1, 0,0]);
+    drawTriangle3DUV([1.0,0.0,0.0, 1.0,1.0,0.0, 1,0,1.0], [1,0, 1,1, 0,0]);
 
     //bottom 
-    drawTriangle3DUV([0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,0.0], [1,0,0,1,-1,1]);
-    drawTriangle3DUV([1.0,0.0,0.0, 1.0,0.0,1.0, 0.0,0.0,1.0], [1,0,0,1,-1,1]);
+    drawTriangle3DUV([0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,0.0],[0,0, 0,1, 1,1]);
+    drawTriangle3DUV([1.0,0.0,0.0, 1.0,0.0,1.0, 0.0,0.0,1.0], [0,0, 0,1, 1,1]);
    
     //left
-    drawTriangle3DUV([0.0,0.0,0.0, 0.0,0.0,1.0, 0,1.0,0.0], [1,0,0,1,-1,1]);
-    drawTriangle3DUV([0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0], [1,0,0,1,-1,1]);
+    drawTriangle3DUV([0.0,0.0,0.0, 0.0,0.0,1.0, 0,1.0,0.0], [1,0, 0,0, 1,1]);
+    drawTriangle3DUV([0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0], [1,1, 0,1, 0,0]);
 
     //back 
-    drawTriangle3DUV([0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0], [1,0,0,1,-1,1]);
-    drawTriangle3DUV([0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0], [1,0,0,1,-1,1]);
+    drawTriangle3DUV([0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0], [0,0, 0,1, 1,1]);
+    drawTriangle3DUV([0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0], [0,0, 1,0, 1,1]);
    
+    }
+
+    renderfast(){
+      //console.log("u_ModelMatrix " + u_ModelMatrix.elements)
+      var rgba = this.color;
+      gl.uniform1i(u_whichTexture, this.textureNum);  
+      gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+      gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+  
+      var allverts = [];
+        //front
+      allverts = allverts.concat([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0]);
+      allverts = allverts.concat([0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0]);
+
+      //top
+      allverts = allverts.concat([0.0,1.0,0.0, 0.0,1.0,1.0, 1.0,1.0,0.0]);
+      allverts = allverts.concat([1.0,1.0,0.0, 1.0,1.0,1, 0.0,1.0,1.0]);
+
+      //right
+      allverts = allverts.concat([1.0,1.0,0.0, 1.0,1.0,1.0, 1,0.0,1.0]);
+      allverts = allverts.concat([1.0,0.0,0.0, 1.0,1.0,0.0, 1,0,1.0]);
+
+      //bottom
+      allverts = allverts.concat([0.0,0.0,0.0, 0.0,0.0,1.0, 1.0,0.0,0.0]);
+      allverts = allverts.concat([1.0,0.0,0.0, 1.0,0.0,1.0, 0.0,0.0,1.0]);
+      //left
+      allverts = allverts.concat([0.0,0.0,0.0, 0.0,0.0,1.0, 0,1.0,0.0]);
+      allverts = allverts.concat([0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0]);
+      //back
+      allverts = allverts.concat([0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0]);
+      allverts = allverts.concat([0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0]);
+
+      
+
+      var alluvs = [];
+
+      alluvs = alluvs.concat([0,0, 1,1, 1,0])
+      alluvs = alluvs.concat([0,0, 0,1, 1,1])
+      alluvs = alluvs.concat([0,1, 0,0, 1,1])
+      alluvs = alluvs.concat( [1,1, 1,0, 0,0])
+      alluvs = alluvs.concat([1,1, 0,1, 0,0]);
+      alluvs = alluvs.concat([1,0, 1,1, 0,0]);
+      alluvs = alluvs.concat([0,0, 0,1, 1,1]);
+      alluvs = alluvs.concat( [0,0, 0,1, 1,1]);
+      alluvs = alluvs.concat([1,0, 0,0, 1,1]);
+      alluvs = alluvs.concat([1,1, 0,1, 0,0]);
+      alluvs = alluvs.concat([0,0, 0,1, 1,1]);
+      alluvs = alluvs.concat([0,0, 1,0, 1,1]);
+
+      drawTriangle3DUVALL(allverts,alluvs);
+
     }
   
   }
@@ -57,9 +109,10 @@ class Cube{
 
 function drawTriangle3D(vertices) {
 
-  var n = 3; // The number of vertices
-
+  var n = vertices.length/3; // The number of vertices
+  //console.log("n " + n)
   // Create a buffer object
+  
   var vertexBuffer = gl.createBuffer();
   if (!vertexBuffer) {
     console.log('Failed to create the buffer object');
