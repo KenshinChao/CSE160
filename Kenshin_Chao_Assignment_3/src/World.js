@@ -415,11 +415,11 @@ function convertCoordinatesEventToGL(ev){
         if (x == 0 || x == 31 || y == 0 || y == 31){
           //var block = new Cube();
           block.color = [1,1,1,1];
-          //block.textureNum = 1
+          block.textureNum = 0;
           block.matrix.setTranslate(0, -1, 0);
           block.matrix.scale(.4,.4,.4)
           block.matrix.translate(x-16, 0, y-16);
-          block.renderfast();
+          block.renderfaster();
         }
       }
     }
@@ -646,38 +646,38 @@ for (var i = 1; i < K; i++){
     
 
         
-    var lLeg = new Cube();
-    lLeg.color = [.9,.34,1,1];
-    lLeg.matrix.setTranslate(-.2,-.45,.2);
-    lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
-    var lLegCoords = new Matrix4(lLeg.matrix);
-    lLeg.matrix.scale(0.35, .2, .3);
-    lLeg.renderfast();
+    // var lLeg = new Cube();
+    // lLeg.color = [.9,.34,1,1];
+    // lLeg.matrix.setTranslate(-.2,-.45,.2);
+    // lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
+    // var lLegCoords = new Matrix4(lLeg.matrix);
+    // lLeg.matrix.scale(0.35, .2, .3);
+    // lLeg.renderfast();
 
-    var rLeg = new Cube();
-    rLeg.color = [.9,.34,1,1];
-    rLeg.matrix.setTranslate(.1, -.45,.2);
-    rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
-    var rLegCoords = new Matrix4(rLeg.matrix);
-    rLeg.matrix.scale(0.35, .2, .3);
-    rLeg.renderfast();
+    // var rLeg = new Cube();
+    // rLeg.color = [.9,.34,1,1];
+    // rLeg.matrix.setTranslate(.1, -.45,.2);
+    // rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
+    // var rLegCoords = new Matrix4(rLeg.matrix);
+    // rLeg.matrix.scale(0.35, .2, .3);
+    // rLeg.renderfast();
 
-    var lFoot = new Cube();
-    lFoot.color = [1,0,1,1];
-    lFoot.matrix = lLegCoords;
-    lFoot.matrix.translate(0.35, .2,0);
-    lFoot.matrix.rotate(270, 0, 0,1);
-    lFoot.matrix.scale(0.3, .1, .3);
-    lFoot.renderfast();
+    // var lFoot = new Cube();
+    // lFoot.color = [1,0,1,1];
+    // lFoot.matrix = lLegCoords;
+    // lFoot.matrix.translate(0.35, .2,0);
+    // lFoot.matrix.rotate(270, 0, 0,1);
+    // lFoot.matrix.scale(0.3, .1, .3);
+    // lFoot.renderfast();
 
     
-    var rFoot = new Cube();
-    rFoot.color = [1,0,1,1];
-    rFoot.matrix = rLegCoords;
-    rFoot.matrix.translate(.35, .3,0);
-    rFoot.matrix.rotate(270, 0, 0,1);
-    rFoot.matrix.scale(0.3, .1, .3);
-    rFoot.renderfast();
+    // var rFoot = new Cube();
+    // rFoot.color = [1,0,1,1];
+    // rFoot.matrix = rLegCoords;
+    // rFoot.matrix.translate(.35, .3,0);
+    // rFoot.matrix.rotate(270, 0, 0,1);
+    // rFoot.matrix.scale(0.3, .1, .3);
+    // rFoot.renderfast();
 
 
 
