@@ -430,7 +430,7 @@ function convertCoordinatesEventToGL(ev){
 
     var projMat = new Matrix4();
 
-    projMat.setPerspective(60, 1*canvas.width/canvas.height, 1, 100);
+    projMat.setPerspective(60, 1*canvas.width/canvas.height, 1, 10000);
     gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
     var viewMat = new Matrix4();
@@ -494,12 +494,13 @@ for (var i = 1; i < K; i++){
 }
   }
    
-    var sky = new Cube();
-    sky.color = [1.0, 0.0, 0.0, 1.0];
-    sky.textureNum = 0;
-    sky.matrix.scale(100,100,100);
-    sky.matrix.translate(-0.5,-0.5,-0.5);
-    sky.renderfast();    
+    var skybox = new Cube();
+    skybox.color = [1.0, 1.0, 1.0, 1.0];
+    skybox.textureNum = 0;
+    
+    skybox.matrix.scale(1000,1000,1000);
+    skybox.matrix.translate(-0.5,-0.5,-0.5);
+    skybox.renderfast();    
 
     var groundPlane = new Cube();
     groundPlane.textureNum = -1;

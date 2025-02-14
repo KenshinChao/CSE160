@@ -3,19 +3,21 @@ class Camera {
         this.eye = new Vector3([0,0,3]);
         this.at = new Vector3([0,0,-100]);
         this.up = new Vector3([0,1,0]);
-
+        this.speed = 1;
         }
 
 forward() {
     let f = new Vector3(this.at.elements).sub(this.eye);
-    f.div(f.magnitude());       
+    f.div(f.magnitude());
+    f.mul(this.speed);       
     this.at.add(f);              
     this.eye.add(f);            
 }
 
 back() {
     let f = new Vector3(this.eye.elements).sub(this.at);  
-    f.div(f.magnitude());      
+    f.div(f.magnitude());   
+    f.mul(this.speed);       
     this.at.add(f);             
     this.eye.add(f);             
 }
