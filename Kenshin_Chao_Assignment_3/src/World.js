@@ -37,7 +37,9 @@ var FSHADER_SOURCE =`
   } else if (u_whichTexture == 0){
     
       gl_FragColor = texture2D(u_Sampler0, v_UV);
-  } else {
+  } else if (u_whichTexture == 1){
+      gl_FragColor = texture2D(u_Sampler1, v_UV);
+}else{
     gl_FragColor = vec4(1,.2,.2,1);
   }
   }`
@@ -131,6 +133,11 @@ function connectVariablesToGLSL(){
     u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0');
     if (!u_ProjectionMatrix) {
       console.log('Failed to get the storage location of u_Sampler0');
+      return;
+    }
+    u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1');
+    if (!u_ProjectionMatrix) {
+      console.log('Failed to get the storage location of u_Sampler1');
       return;
     }
 
@@ -235,9 +242,22 @@ function initTextures(){
   } 
     image.src = 'sky.jpg';
 
-    //add more texture loading
 
-    return true;
+    //add more texture loading
+  var dirtimg = new Image();
+  if (!dirtimg){
+    console.log("Failed to create the image object");
+    return false;
+  }
+
+  dirtimg.onload = function() {
+    sendImageToTEXTURE1(dirtimg);
+  }
+
+  dirtimg.src = 'dirt.jpg';
+    
+  
+  return true;
 
 
 }
@@ -264,6 +284,27 @@ function sendImageToTEXTURE0(image){
   console.log("finished loadTexture");
 }
 
+function sendImageToTEXTURE1(image){
+  var texture = gl.createTexture();
+  if (!texture){
+    console.log("Failed to creeate the texture object");
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
+  gl.activeTexture(gl.TEXTURE1);
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+  gl.uniform1i(u_Sampler1,1);
+
+  console.log("finished loadTexture");
+}
 
 // let g_previewShape = null;
 function main() {
@@ -415,9 +456,9 @@ function convertCoordinatesEventToGL(ev){
         if (x == 0 || x == 31 || y == 0 || y == 31){
           //var block = new Cube();
           block.color = [1,1,1,1];
-          block.textureNum = 0;
+          block.textureNum = 1;
           block.matrix.setTranslate(0, -1, 0);
-          block.matrix.scale(.4,.4,.4)
+          block.matrix.scale(3,3,3)
           block.matrix.translate(x-16, 0, y-16);
           block.renderfaster();
         }
@@ -647,38 +688,38 @@ for (var i = 1; i < K; i++){
     
 
         
-    // var lLeg = new Cube();
-    // lLeg.color = [.9,.34,1,1];
-    // lLeg.matrix.setTranslate(-.2,-.45,.2);
-    // lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
-    // var lLegCoords = new Matrix4(lLeg.matrix);
-    // lLeg.matrix.scale(0.35, .2, .3);
-    // lLeg.renderfast();
+    var lLeg = new Cube();
+    lLeg.color = [.9,.34,1,1];
+    lLeg.matrix.setTranslate(-.2,-.45,.2);
+    lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
+    var lLegCoords = new Matrix4(lLeg.matrix);
+    lLeg.matrix.scale(0.35, .2, .3);
+    lLeg.renderfast();
 
-    // var rLeg = new Cube();
-    // rLeg.color = [.9,.34,1,1];
-    // rLeg.matrix.setTranslate(.1, -.45,.2);
-    // rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
-    // var rLegCoords = new Matrix4(rLeg.matrix);
-    // rLeg.matrix.scale(0.35, .2, .3);
-    // rLeg.renderfast();
+    var rLeg = new Cube();
+    rLeg.color = [.9,.34,1,1];
+    rLeg.matrix.setTranslate(.1, -.45,.2);
+    rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
+    var rLegCoords = new Matrix4(rLeg.matrix);
+    rLeg.matrix.scale(0.35, .2, .3);
+    rLeg.renderfast();
 
-    // var lFoot = new Cube();
-    // lFoot.color = [1,0,1,1];
-    // lFoot.matrix = lLegCoords;
-    // lFoot.matrix.translate(0.35, .2,0);
-    // lFoot.matrix.rotate(270, 0, 0,1);
-    // lFoot.matrix.scale(0.3, .1, .3);
-    // lFoot.renderfast();
+    var lFoot = new Cube();
+    lFoot.color = [1,0,1,1];
+    lFoot.matrix = lLegCoords;
+    lFoot.matrix.translate(0.35, .2,0);
+    lFoot.matrix.rotate(270, 0, 0,1);
+    lFoot.matrix.scale(0.3, .1, .3);
+    lFoot.renderfast();
 
     
-    // var rFoot = new Cube();
-    // rFoot.color = [1,0,1,1];
-    // rFoot.matrix = rLegCoords;
-    // rFoot.matrix.translate(.35, .3,0);
-    // rFoot.matrix.rotate(270, 0, 0,1);
-    // rFoot.matrix.scale(0.3, .1, .3);
-    // rFoot.renderfast();
+    var rFoot = new Cube();
+    rFoot.color = [1,0,1,1];
+    rFoot.matrix = rLegCoords;
+    rFoot.matrix.translate(.35, .3,0);
+    rFoot.matrix.rotate(270, 0, 0,1);
+    rFoot.matrix.scale(0.3, .1, .3);
+    rFoot.renderfast();
 
 
 
