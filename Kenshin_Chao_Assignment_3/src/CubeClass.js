@@ -39,31 +39,26 @@ class Cube{
         
       
       ]
-      this.cubeUVs = new Float32Array([
-        // Front face
-        0,0,  1,1,  1,0,
-        0,0,  0,1,  1,1,
-    
-        // Top face
-        0,1,  0,0,  1,1,
-        1,1,  1,0,  0,0,
-    
-        // Right face
-        1,1,  1,0,  0,0,
-        1,1,  0,0,  0,1,
-    
-        // Bottom face
-        0,0,  1,0,  0,1,
-        1,0,  1,1,  0,1,
-    
-        // Left face
-        1,0,  0,0,  1,1,
-        1,1,  0,1,  0,0,
-    
-        // Back face
-        0,0,  1,1,  1,0,
-        0,0,  0,1,  1,1
-    ]);
+      this.cubeUVs32 = new Float32Array(
+
+    [0,0, 1,1, 1,0,
+     0,0, 0,1, 1,1,
+
+     0,1, 0,0, 1,1,
+      1,1, 1,0, 0,0,
+
+     1,1, 0,1, 0,0,
+    1,0, 1,1, 0,0,
+
+    0,0, 0,1, 1,0,
+      1,0, 1,1, 0,1,
+
+      1,0, 0,0, 1,1,
+      1,1, 0,1, 0,0,
+      
+      0,0, 0,1, 1,1,
+      0,0, 1,0, 1,1]);
+
     }
     render(){
       
@@ -180,35 +175,13 @@ class Cube{
   gl.bufferData(gl.ARRAY_BUFFER, this.cubeVerts32, gl.DYNAMIC_DRAW);
 
 
-  var alluvs = [];
+ 
+  var g_UVbuffer = gl.createBuffer();
+     if (g_UVbuffer == null){
+      initUVBuffer();
+     }
+gl.bufferData(gl.ARRAY_BUFFER, this.cubeUVs32, gl.DYNAMIC_DRAW);
 
-      alluvs = alluvs.concat([0,0, 1,1, 1,0])
-      alluvs = alluvs.concat([0,0, 0,1, 1,1])
-
-      alluvs = alluvs.concat([0,1, 0,0, 1,1])
-      alluvs = alluvs.concat( [1,1, 1,0, 0,0])
-
-      alluvs = alluvs.concat([1,1, 0,1, 0,0]);
-      alluvs = alluvs.concat([1,0, 1,1, 0,0]);
-
-      alluvs = alluvs.concat([0,0, 0,1, 1,0]);
-      alluvs = alluvs.concat( [1,0, 1,1, 0,1]);
-
-      alluvs = alluvs.concat([1,0, 0,0, 1,1]);
-      alluvs = alluvs.concat([1,1, 0,1, 0,0]);
-      
-      alluvs = alluvs.concat([0,0, 0,1, 1,1]);
-      alluvs = alluvs.concat([0,0, 1,0, 1,1]);
-
-  var uvBuffer = gl.createBuffer();
-      if (!uvBuffer) {
-        console.log('Failed to create the buffer object');
-        return -1;
-      }
-gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(alluvs), gl.DYNAMIC_DRAW);
-gl.vertexAttribPointer(a_UV, 2, gl.FLOAT, false, 0, 0);
-gl.enableVertexAttribArray(a_UV);
 
   gl.drawArrays(gl.TRIANGLES, 0, 36)
 

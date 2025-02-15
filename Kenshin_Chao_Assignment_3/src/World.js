@@ -441,27 +441,27 @@ function convertCoordinatesEventToGL(ev){
  
   var g_map = [
     [1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1]
 ];
   function drawMap(){
     var block = new Cube();
     for (x = 0 ; x < 32 ; x++){
       for (y = 0; y < 32; y++){
-        if (x == 0 || x == 31 || y == 0 || y == 31){
-          //var block = new Cube();
+        
           block.color = [1,1,1,1];
           block.textureNum = 1;
-          block.matrix.setTranslate(0, -1, 0);
+          block.matrix.setTranslate(0, -4, 0);
           block.matrix.scale(3,3,3)
           block.matrix.translate(x-16, 0, y-16);
           block.renderfaster();
-        }
+        
+      
       }
     }
   }
@@ -543,11 +543,11 @@ for (var i = 1; i < K; i++){
     skybox.matrix.translate(-0.5,-0.5,-0.5);
     skybox.renderfast();    
 
-    var groundPlane = new Cube();
-    groundPlane.textureNum = -1;
-    groundPlane.matrix.translate(-5,-2,-5);
-    groundPlane.matrix.scale(100, 1, 100);
-    groundPlane.renderfast();
+    // var groundPlane = new Cube();
+    // groundPlane.textureNum = -1;
+    // groundPlane.matrix.translate(-5,-2,-5);
+    // groundPlane.matrix.scale(100, 1, 100);
+    // groundPlane.renderfast();
 
 
     var body = new Cube();

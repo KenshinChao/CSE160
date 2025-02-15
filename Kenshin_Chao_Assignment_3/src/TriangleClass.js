@@ -130,7 +130,7 @@ function drawTriangle(vertices) {
 
   }
  var g_vertexBuffer = null;
-
+ var g_UVbuffer = null;
   function initTriangle3D(){
     g_vertexBuffer = gl.createBuffer();
     if (!g_vertexBuffer) {
@@ -147,6 +147,20 @@ function drawTriangle(vertices) {
   
     // Enable the assignment to a_Position variable
     gl.enableVertexAttribArray(a_Position);
+
+  }
+
+  function initUVBuffer(){
+    
+    g_UVbuffer = gl.createBuffer();
+      if (!g_UVbuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+      }
+    gl.bindBuffer(gl.ARRAY_BUFFER, g_UVbuffer);
+
+    gl.vertexAttribPointer(a_UV, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(a_UV);
   }
 
   function drawTriangle3DUVALL(vertices, uv){
