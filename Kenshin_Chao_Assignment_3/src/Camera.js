@@ -6,13 +6,16 @@ class Camera {
         this.speed = 1;
         }
 
+
+
 forward() {
     let f = new Vector3(this.at.elements).sub(this.eye);
     f.div(f.magnitude());
     f.mul(this.speed);       
     this.at.add(f);              
-    this.eye.add(f);       
-    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));           
+    this.eye.add(f);     
+    printCoords(this); 
+    // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));           
 }
 
 back() {
@@ -21,7 +24,8 @@ back() {
     f.mul(this.speed);       
     this.at.add(f);             
     this.eye.add(f);      
-    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
+    printCoords(this); 
+    // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 left() {
@@ -30,8 +34,9 @@ left() {
     let s = Vector3.cross(f, this.up); 
     s.div(s.magnitude());      
     this.at.add(s);             
-    this.eye.add(s);             
-    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
+    this.eye.add(s);     
+    printCoords(this);         
+    // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 right() {
@@ -42,7 +47,8 @@ right() {
     s.mul(-1);                   
     this.at.add(s);             
     this.eye.add(s);       
-    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
+    printCoords(this);  
+    // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 rotateLeft() {
@@ -99,4 +105,12 @@ rotateRight() {
     g_camera.at.elements[0] = g_camera.eye.elements[0] + newX;
     g_camera.at.elements[2] = g_camera.eye.elements[2] + newZ;
 }
+
+
 }
+
+
+// function printCoords(cameraobj){
+//     console.log("New coords: " + "x: " + Math.floor(cameraobj.eye.elements[0] * 1) + " y: " + Math.floor(cameraobj.eye.elements[1] * 1) + " z :" + Math.floor(cameraobj.eye.elements[2] * 1));         
+// }
+        

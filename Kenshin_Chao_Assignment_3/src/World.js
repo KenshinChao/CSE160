@@ -429,16 +429,27 @@ function main() {
   renderScene();
 
 }
+
+
+function printCoords(cameraobj){
+    console.log("New coords: " + "x: " + Math.floor(cameraobj.eye.elements[0] * 1) + " y: " + Math.floor(cameraobj.eye.elements[1] * 1) + " z :" + Math.floor(cameraobj.eye.elements[2] * 1));         
+}
+        
 let log = document.querySelector("#log");
 document.addEventListener("click", click);
 
 function click(ev){
+  if (ev.buttons == 1){
+    console.log("left clicked")
+    printCoords(g_camera);
+    
+  }
   [x,y] = convertCoordinatesEventToGL(ev);
   if (y < .9 && ev.shiftKey == false){
   g_globalAnglex = x*180;
   g_globalAngley = y*180;
   console.log(g_globalAngley)
-  
+
   }
   log.textContent = ``;
   if (ev.shiftKey == true ){
@@ -450,7 +461,7 @@ function click(ev){
     mouthMove = true;
     }
   }
-  
+    
 }
 
 var g_startTime = performance.now()/1000.0;
@@ -530,7 +541,7 @@ function convertCoordinatesEventToGL(ev){
   // var g_up = [0,1,0];
 
  
-  var worldArray = [
+  var worldArray = [ //how tall cubes are made/
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
@@ -563,32 +574,35 @@ function convertCoordinatesEventToGL(ev){
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-
-  
   ];
+
+  var renderBlockArray = [
+  ];  
  
   function drawMap(){
     var block = new Cube();
     for (x = 0 ; x < 32 ; x++){
-
-
-      for (y = 0; y < 32; y++){
-        if (worldArray[x][y] > 0){
-          for (n = 0; n < worldArray[x][y]; n++){
+      for (z = 0; z < 32; z++){
+        if (worldArray[x][z] > 0){
+          for (n = 0; n < worldArray[x][z]; n++){
+      
           block.color = [1,1,1,1];
           block.textureNum = 1
           block.matrix.setTranslate(0, -2, 0);
           block.matrix.scale(1,1,1)
-          block.matrix.translate(x-16, 1+n, y-16);
+          block.matrix.translate(x-16, 1+n, z-16);
 
           block.renderfaster();
+         
+          
         }
       }
           
         
       
       }
-    }
+    } 
+    console.log("it ran")
   }
 
   function renderScene(){
@@ -626,38 +640,38 @@ function convertCoordinatesEventToGL(ev){
     gl.clear(gl.COLOR_BUFFER_BIT);
   //var len = g_points.length
 
-  drawMap()
+  drawMap();
   
 
 
   if (g_Aanimation){
-  var K = 8;
-for (var i = 1; i < K; i++){
-  var c = new Cube();
-  c.matrix.translate(-.9,Math.random()+i/K-1,.8);
-  c.matrix.scale(.02,.05,.02)
-  c.renderfast();
-}
-var K = 8;
-for (var i = 1; i < K; i++){
-  var c = new Cube();
-  c.matrix.translate(.9,Math.random()+i/K-.2,.5);
-  c.matrix.scale(.02,.05,.02)
-  c.renderfast();
-}
-for (var i = 1; i < K; i++){
-  var c = new Cube();
-  c.matrix.translate(.2,Math.random()+i/K-.5,.4);
-  c.matrix.scale(.02,.05,.02)
-  c.renderfast();
-}
-var K = 4;
-for (var i = 1; i < K; i++){
-  var c = new Cube();
-  c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
-  c.matrix.scale(.02,.05,.02)
-  c.renderfast();
-}
+//   var K = 8;
+// for (var i = 1; i < K; i++){
+//   var c = new Cube();
+//   c.matrix.translate(-.9,Math.random()+i/K-1,.8);
+//   c.matrix.scale(.02,.05,.02)
+//   c.renderfast();
+// }
+// var K = 8;
+// for (var i = 1; i < K; i++){
+//   var c = new Cube();
+//   c.matrix.translate(.9,Math.random()+i/K-.2,.5);
+//   c.matrix.scale(.02,.05,.02)
+//   c.renderfast();
+// }
+// for (var i = 1; i < K; i++){
+//   var c = new Cube();
+//   c.matrix.translate(.2,Math.random()+i/K-.5,.4);
+//   c.matrix.scale(.02,.05,.02)
+//   c.renderfast();
+// }
+// var K = 4;
+// for (var i = 1; i < K; i++){
+//   var c = new Cube();
+//   c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
+//   c.matrix.scale(.02,.05,.02)
+//   c.renderfast();
+// }
   }
    
   let rotateAnimal = new Matrix4();
