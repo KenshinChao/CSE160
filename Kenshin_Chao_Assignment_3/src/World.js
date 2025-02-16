@@ -26,6 +26,7 @@ var FSHADER_SOURCE =`
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
+  uniform sampler2D u_Sampler2;
   uniform int u_whichTexture;
   void main() {
 
@@ -39,7 +40,10 @@ var FSHADER_SOURCE =`
       gl_FragColor = texture2D(u_Sampler0, v_UV);
   } else if (u_whichTexture == 1){
       gl_FragColor = texture2D(u_Sampler1, v_UV);
-}else{
+}else if(u_whichTexture == 2){
+      gl_FragColor = texture2D(u_Sampler2, v_UV);
+      }
+      else{
     gl_FragColor = vec4(1,.2,.2,1);
   }
   }`
@@ -55,6 +59,8 @@ let u_ProjectionMatrix;
 let u_ViewMatrix;
 let u_GlobalRotateMatrix;
 let u_Sampler0;
+let u_Sampler1;
+let u_Sampler2;
 let u_whichTexture; 
 function setupWebGL(){
  // Retrieve <canvas> element
@@ -131,13 +137,18 @@ function connectVariablesToGLSL(){
     }
 
     u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0');
-    if (!u_ProjectionMatrix) {
+    if (!u_Sampler0) {
       console.log('Failed to get the storage location of u_Sampler0');
       return;
     }
     u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1');
-    if (!u_ProjectionMatrix) {
+    if (!u_Sampler1) {
       console.log('Failed to get the storage location of u_Sampler1');
+      return;
+    }
+    u_Sampler2 = gl.getUniformLocation(gl.program, 'u_Sampler2');
+    if (!u_Sampler2) {
+      console.log('Failed to get the storage location of u_Sampler2');
       return;
     }
 
@@ -254,9 +265,22 @@ function initTextures(){
     sendImageToTEXTURE1(dirtimg);
   }
 
+
   dirtimg.src = 'dirt.jpg';
     
-  
+  var grassimg = new Image();
+  if (!grassimg){
+    console.log("Failed to create the image object");
+    return false;
+  }
+
+  grassimg.onload = function() {
+    sendImageToTEXTURE2(grassimg);
+  }
+
+  grassimg.src = 'grassplane.jpg';
+    
+  // console.log(grassimg)
   return true;
 
 
@@ -302,6 +326,28 @@ function sendImageToTEXTURE1(image){
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 
   gl.uniform1i(u_Sampler1,1);
+
+  console.log("finished loadTexture");
+}
+
+function sendImageToTEXTURE2(image){
+  var texture = gl.createTexture();
+  if (!texture){
+    console.log("Failed to creeate the texture object");
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
+  gl.activeTexture(gl.TEXTURE2);
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+  gl.uniform1i(u_Sampler2,2);
 
   console.log("finished loadTexture");
 }
@@ -439,27 +485,61 @@ function convertCoordinatesEventToGL(ev){
   // var g_up = [0,1,0];
 
  
-  var g_map = [
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1]
-];
+  var worldArray = [
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+
+  
+  ];
+ 
   function drawMap(){
     var block = new Cube();
     for (x = 0 ; x < 32 ; x++){
+
+
       for (y = 0; y < 32; y++){
-        
+        if (worldArray[x][y] > 0){
+          for (n = 0; n < worldArray[x][y]; n++){
           block.color = [1,1,1,1];
           block.textureNum = 1;
-          block.matrix.setTranslate(0, -4, 0);
-          block.matrix.scale(3,3,3)
-          block.matrix.translate(x-16, 0, y-16);
+          block.matrix.setTranslate(0, -2, 0);
+          block.matrix.scale(1,1,1)
+          block.matrix.translate(x-16, 1+n, y-16);
+
           block.renderfaster();
+        }
+      }
+          
         
       
       }
@@ -536,18 +616,18 @@ for (var i = 1; i < K; i++){
   }
    
     var skybox = new Cube();
-    skybox.color = [1.0, 1.0, 1.0, 1.0];
-    skybox.textureNum = 0;
+    skybox.color = [117/255, 149/255, 255/255, 1.0];
+    skybox.textureNum = -2;
     
     skybox.matrix.scale(1000,1000,1000);
     skybox.matrix.translate(-0.5,-0.5,-0.5);
     skybox.renderfast();    
 
-    // var groundPlane = new Cube();
-    // groundPlane.textureNum = -1;
-    // groundPlane.matrix.translate(-5,-2,-5);
-    // groundPlane.matrix.scale(100, 1, 100);
-    // groundPlane.renderfast();
+    var groundPlane = new Cube();
+    groundPlane.textureNum = 2;
+    groundPlane.matrix.translate(-5,-2,-5);
+    groundPlane.matrix.scale(100, 1, 100);
+    groundPlane.renderfast();
 
 
     var body = new Cube();

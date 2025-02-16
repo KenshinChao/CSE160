@@ -1,6 +1,6 @@
 class Camera {
     constructor(){
-        this.eye = new Vector3([0,0,3]);
+        this.eye = new Vector3([0,0,3]); //almost like location
         this.at = new Vector3([0,0,-100]);
         this.up = new Vector3([0,1,0]);
         this.speed = 1;
@@ -11,7 +11,8 @@ forward() {
     f.div(f.magnitude());
     f.mul(this.speed);       
     this.at.add(f);              
-    this.eye.add(f);            
+    this.eye.add(f);       
+    console.log("New coords: " + this.eye.elements)     
 }
 
 back() {
@@ -19,7 +20,8 @@ back() {
     f.div(f.magnitude());   
     f.mul(this.speed);       
     this.at.add(f);             
-    this.eye.add(f);             
+    this.eye.add(f);      
+    console.log("New coords: " + this.eye.elements)         
 }
 
 left() {
@@ -29,6 +31,7 @@ left() {
     s.div(s.magnitude());      
     this.at.add(s);             
     this.eye.add(s);             
+    console.log("New coords: " + this.eye.elements)  
 }
 
 right() {
@@ -38,7 +41,8 @@ right() {
     s.div(s.magnitude());      
     s.mul(-1);                   
     this.at.add(s);             
-    this.eye.add(s);              
+    this.eye.add(s);       
+    console.log("New coords: " + this.eye.elements)         
 }
 
 rotateLeft() {
