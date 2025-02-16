@@ -113,4 +113,23 @@ rotateRight() {
 // function printCoords(cameraobj){
 //     console.log("New coords: " + "x: " + Math.floor(cameraobj.eye.elements[0] * 1) + " y: " + Math.floor(cameraobj.eye.elements[1] * 1) + " z :" + Math.floor(cameraobj.eye.elements[2] * 1));         
 // }
+
+function getCameraDirection() {
+    let dir = new Vector3(g_camera.at.elements).sub(g_camera.eye);
+    let angle = Math.atan2(dir.elements[2], dir.elements[0]) * (180 / Math.PI); // Convert to degrees
+
+    if (angle < 0) angle += 360; // Normalize to 0-360 degrees
+
+    if (angle >= 315 || angle < 45) {
+        return "+X";
+    } else if (angle >= 45 && angle < 135) {
+        return "+Z";
+    } else if (angle >= 135 && angle < 225) {
+        return "-X";
+    } else {
+        return "-Z";
+    }
+}
+
+
         

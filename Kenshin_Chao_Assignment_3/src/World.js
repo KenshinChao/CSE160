@@ -432,18 +432,17 @@ function main() {
 
 
 function printCoords(cameraobj){
-    console.log("New coords: " + "x: " + Math.floor(cameraobj.eye.elements[0] * 1) + " y: " + Math.floor(cameraobj.eye.elements[1] * 1) + " z :" + Math.floor(cameraobj.eye.elements[2] * 1));         
+    console.log("New coords: " + "x: " + Math.floor(cameraobj.eye.elements[0] * 1) + " y: " + Math.floor(cameraobj.eye.elements[1] * 1) + " z :" + Math.floor(cameraobj.eye.elements[2] * 1));  
+    return [Math.floor(cameraobj.eye.elements[0] * 1), Math.floor(cameraobj.eye.elements[2] * 1)]       
 }
         
 let log = document.querySelector("#log");
 document.addEventListener("click", click);
 
 function click(ev){
-  if (ev.buttons == 1){
-    console.log("left clicked")
-    printCoords(g_camera);
-    
-  }
+  console.log(blocks);
+
+  
   [x,y] = convertCoordinatesEventToGL(ev);
   if (y < .9 && ev.shiftKey == false){
   g_globalAnglex = x*180;
@@ -491,8 +490,89 @@ function updateAnimationAngles() {
   }
 }
 
+
 function keydown(ev){
-  if (ev.key === 'd'){
+  if (ev.key == 'c'){
+    console.log("place")
+    let coordofCam =  printCoords(g_camera);
+   
+    console.log("coordinate print: " + printCoords(g_camera));
+    let dirV = getCameraDirection();
+// Example usage:
+    console.log("Camera is facing: " + getCameraDirection());
+    console.log("word array: " + worldArray[coordofCam[0]+8,coordofCam[1]+8])
+    if (dirV == "+X"){
+      
+      if (worldArray[coordofCam[0]+16+2][coordofCam[1]+16] < 5){
+        worldArray[coordofCam[0]+16+2][coordofCam[1]+16]++;
+        console.log("PLACE BLOCK");
+      }
+      
+    }else if(dirV == "-X"){
+      
+      if (worldArray[coordofCam[0]+16-2][coordofCam[1]+16] < 5){
+        worldArray[coordofCam[0]+16-2][coordofCam[1]+16]++;
+        console.log("PLACE BLOCK");
+      }
+    }
+      else if(dirV == "-Z"){
+      
+        if (worldArray[coordofCam[0]+16][coordofCam[1]+16-2] < 5){
+          worldArray[coordofCam[0]+16][coordofCam[1]+16-2]++;
+          console.log("PLACE BLOCK");
+        }
+        
+      }
+      else if(dirV == "+Z"){
+      
+        if (worldArray[coordofCam[0]+16][coordofCam[1]+16+2] < 5){
+          worldArray[coordofCam[0]+16][coordofCam[1]+16+2]++;
+          console.log("PLACE BLOCK");
+        }
+        
+      }
+  }
+  else if(ev.key == 'v'){
+    let coordofCam =  printCoords(g_camera);
+   
+    console.log("coordinate print: " + printCoords(g_camera));
+    let dirV = getCameraDirection();
+// Example usage:
+    console.log("Camera is facing: " + getCameraDirection());
+    console.log("word array: " + worldArray[coordofCam[0]+8,coordofCam[1]+8])
+    if (dirV == "+X"){
+      
+      if (worldArray[coordofCam[0]+16+2][coordofCam[1]+16] > 0){
+        worldArray[coordofCam[0]+16+2][coordofCam[1]+16]--;
+        console.log("delete BLOCK");
+      }
+      
+    }
+    else if(dirV == "-X"){
+      
+      if (worldArray[coordofCam[0]+16-2][coordofCam[1]+16] > 0){
+        worldArray[coordofCam[0]+16-2][coordofCam[1]+16]--;
+        console.log("delete BLOCK");
+      }
+    }
+      else if(dirV == "-Z"){
+      
+        if (worldArray[coordofCam[0]+16][coordofCam[1]+16-2] > 0){
+          worldArray[coordofCam[0]+16][coordofCam[1]+16-2]--;
+          console.log("delete BLOCK");
+        }
+        
+      }
+      else if(dirV == "+Z"){
+      
+        if (worldArray[coordofCam[0]+16][coordofCam[1]+16+2] > 0){
+          worldArray[coordofCam[0]+16][coordofCam[1]+16+2]--;
+          console.log("delete BLOCK");
+        }
+        
+      }
+  }
+  else if (ev.key === 'd'){
     g_camera.right();
   }else if (ev.key === 'a'){
     g_camera.left();
@@ -554,14 +634,14 @@ function convertCoordinatesEventToGL(ev){
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
@@ -575,10 +655,9 @@ function convertCoordinatesEventToGL(ev){
   [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
   ];
+  
 
-  var renderBlockArray = [
-  ];  
- 
+  var blocks = new Set;
   function drawMap(){
     var block = new Cube();
     for (x = 0 ; x < 32 ; x++){
@@ -591,18 +670,23 @@ function convertCoordinatesEventToGL(ev){
           block.matrix.setTranslate(0, -2, 0);
           block.matrix.scale(1,1,1)
           block.matrix.translate(x-16, 1+n, z-16);
+          let coordKey = `${x-16},${1 + n},${z-16}`; // Unique coordinate key
 
-          block.renderfaster();
-         
-          
+          if (!blocks.has(coordKey)) { // Prevent duplicates
+              blocks.add(coordKey); // Store only coordinates
+          }
+          if (x == 0 && z == 0){
+            //console.log(block.matrix.elements);
+          }
+
+          block.renderfaster(); 
         }
       }
-          
-        
-      
       }
+
     } 
-    console.log("it ran")
+    
+    //console.log("it ran")
   }
 
   function renderScene(){
