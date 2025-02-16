@@ -59,7 +59,11 @@ class Cube{
       0,0, 0,1, 1,1,
       0,0, 1,0, 1,1]);
 
+  
+      this.coords = [0,0,0];
     }
+
+  
     render(){
       
       // var xy = this.position;

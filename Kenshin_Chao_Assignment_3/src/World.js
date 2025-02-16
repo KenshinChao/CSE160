@@ -27,6 +27,7 @@ var FSHADER_SOURCE =`
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
   uniform sampler2D u_Sampler2;
+  uniform sampler2D u_Sampler3;
   uniform int u_whichTexture;
   void main() {
 
@@ -40,9 +41,11 @@ var FSHADER_SOURCE =`
       gl_FragColor = texture2D(u_Sampler0, v_UV);
   } else if (u_whichTexture == 1){
       gl_FragColor = texture2D(u_Sampler1, v_UV);
-}else if(u_whichTexture == 2){
+  }else if(u_whichTexture == 2){
       gl_FragColor = texture2D(u_Sampler2, v_UV);
-      }
+  }else if(u_whichTexture == 3){
+      gl_FragColor = texture2D(u_Sampler3, v_UV);
+  }
       else{
     gl_FragColor = vec4(1,.2,.2,1);
   }
@@ -149,6 +152,12 @@ function connectVariablesToGLSL(){
     u_Sampler2 = gl.getUniformLocation(gl.program, 'u_Sampler2');
     if (!u_Sampler2) {
       console.log('Failed to get the storage location of u_Sampler2');
+      return;
+    }
+
+    u_Sampler3 = gl.getUniformLocation(gl.program, 'u_Sampler3');
+    if (!u_Sampler2) {
+      console.log('Failed to get the storage location of u_Sampler3');
       return;
     }
 
@@ -280,6 +289,20 @@ function initTextures(){
 
   grassimg.src = 'grassplane.jpg';
     
+
+  var stoneimg = new Image();
+  if (!stoneimg){
+    console.log("Failed to create the image object");
+    return false;
+  }
+
+  stoneimg.onload = function() {
+    sendImageToTEXTURE3(stoneimg);
+  }
+
+  stoneimg.src = 'stone.jpg';
+    
+
   // console.log(grassimg)
   return true;
 
@@ -348,6 +371,28 @@ function sendImageToTEXTURE2(image){
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 
   gl.uniform1i(u_Sampler2,2);
+
+  console.log("finished loadTexture");
+}
+
+function sendImageToTEXTURE3(image){
+  var texture = gl.createTexture();
+  if (!texture){
+    console.log("Failed to creeate the texture object");
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
+  gl.activeTexture(gl.TEXTURE3);
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+  gl.uniform1i(u_Sampler3,3);
 
   console.log("finished loadTexture");
 }
@@ -489,6 +534,23 @@ function convertCoordinatesEventToGL(ev){
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
@@ -498,25 +560,8 @@ function convertCoordinatesEventToGL(ev){
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
 
   
@@ -531,7 +576,7 @@ function convertCoordinatesEventToGL(ev){
         if (worldArray[x][y] > 0){
           for (n = 0; n < worldArray[x][y]; n++){
           block.color = [1,1,1,1];
-          block.textureNum = 1;
+          block.textureNum = 1
           block.matrix.setTranslate(0, -2, 0);
           block.matrix.scale(1,1,1)
           block.matrix.translate(x-16, 1+n, y-16);
@@ -564,7 +609,7 @@ function convertCoordinatesEventToGL(ev){
     gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
 
-    var globalRotMat = new Matrix4().rotate(g_globalAnglex, g_globalAngley, 1, 0);
+    var globalRotMat = new Matrix4().rotate(g_globalAnglex, 0, 1, 0);
     gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
 
     // var globalRotMat= new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -615,6 +660,9 @@ for (var i = 1; i < K; i++){
 }
   }
    
+  let rotateAnimal = new Matrix4();
+  rotateAnimal.rotate(180, 0, 1, 0); // Rotate 180 degrees around Y-axis
+
     var skybox = new Cube();
     skybox.color = [117/255, 149/255, 255/255, 1.0];
     skybox.textureNum = -2;
@@ -625,14 +673,14 @@ for (var i = 1; i < K; i++){
 
     var groundPlane = new Cube();
     groundPlane.textureNum = 2;
-    groundPlane.matrix.translate(-5,-2,-5);
-    groundPlane.matrix.scale(100, 1, 100);
+    groundPlane.matrix.translate(-16,-2,-16);
+    groundPlane.matrix.scale(32, 1, 32);
     groundPlane.renderfast();
 
-
+    
     var body = new Cube();
     body.color = [1, 0.6, 1, 1];
-    body.textureNum = 0;
+    body.textureNum = -2;
     body.matrix.translate(-.25, -.5, 0);
     body.matrix.scale(.6, .6, .6);
     body.renderfast ();
@@ -647,7 +695,9 @@ for (var i = 1; i < K; i++){
     
     var leftarm = new Cube();
     leftarm.color = [1, 0.6, 1, 1];
+     
     leftarm.matrix.setTranslate(-.15,-.3,.4);
+    
     leftarm.matrix.rotate(180, 0, 90,1);
     leftarm.matrix.rotate(g_armAngle, 0, 0,1);
     // if (g_Aanimation){
@@ -700,7 +750,7 @@ for (var i = 1; i < K; i++){
 
     var righteye = new Cube();
     righteye.color = [0,0,0,1];
-    righteye.matrix.setTranslate(0.12, -.25,-.05);
+    righteye.matrix.setTranslate(0.12, -.25,.35);
     righteye.matrix.rotate(0, 0, 0,1);
   
     righteye.matrix.scale(0.12, .25, .3);
@@ -709,7 +759,7 @@ for (var i = 1; i < K; i++){
 
     var rightlight = new Cube();
     rightlight.color = [1,1,1,1];
-    rightlight.matrix.setTranslate(0.115, -.1,-.06);
+    rightlight.matrix.setTranslate(0.115, -.1,.36);
     rightlight.matrix.rotate(0, 0, 0,1);
   
     rightlight.matrix.scale(0.055, .045, .3);
@@ -719,7 +769,7 @@ for (var i = 1; i < K; i++){
 
     var lefteye = new Cube();
     lefteye.color = [0,0,0,1];
-    lefteye.matrix.setTranslate(-0.15, -.25,-.05);
+    lefteye.matrix.setTranslate(-0.15, -.25,.35);
     lefteye.matrix.rotate(0, 0, 0,1);
   
     lefteye.matrix.scale(0.12, .25, .3);
@@ -727,7 +777,7 @@ for (var i = 1; i < K; i++){
 
     var leftlight = new Cube();
     lefteye.color = [1,1,1,1];
-    lefteye.matrix.setTranslate(-0.156, -.1,-.06);
+    lefteye.matrix.setTranslate(-0.156, -.1,.36);
     lefteye.matrix.rotate(0, 0, 0,1);
   
     lefteye.matrix.scale(0.055, .045, .3);
@@ -735,7 +785,7 @@ for (var i = 1; i < K; i++){
 
     var lmouth = new Cube();
     lmouth.color = [0,0,0,1];
-    lmouth.matrix.setTranslate(0.05, -.32,-.05);
+    lmouth.matrix.setTranslate(0.05, -.32,.35);
     lmouth.matrix.rotate(180+g_mouthAngle, 0, 0,1);
   
     lmouth.matrix.scale(0.06, .02, .3);
@@ -743,7 +793,7 @@ for (var i = 1; i < K; i++){
 
     var rmouth = new Cube();
     rmouth.color = [0,0,0,1];
-    rmouth.matrix.setTranslate(0.05, -.34,-.05);
+    rmouth.matrix.setTranslate(0.05, -.34,.35);
     rmouth.matrix.rotate(0-g_mouthAngle, 0, 0,1);
   
     rmouth.matrix.scale(0.06, .02, .3);
@@ -752,7 +802,7 @@ for (var i = 1; i < K; i++){
     
     var lblush = new Cube();
     lblush.color = [1,0,0,1];
-    lblush.matrix.setTranslate(0.2, -.32,-.05);
+    lblush.matrix.setTranslate(0.2, -.32,.35);
     lblush.matrix.rotate(0, 0, 0,1);
   
     lblush.matrix.scale(0.09, .05, .3);
@@ -760,7 +810,7 @@ for (var i = 1; i < K; i++){
 
     var rblush = new Cube();
     rblush.color = [1,0,0,1];
-    rblush.matrix.setTranslate(-0.2, -.32,-.05);
+    rblush.matrix.setTranslate(-0.2, -.32,.35);
     rblush.matrix.rotate(0, 0, 0,1);
   
     rblush.matrix.scale(0.09, .05, .3);

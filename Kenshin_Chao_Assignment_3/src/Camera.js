@@ -12,7 +12,7 @@ forward() {
     f.mul(this.speed);       
     this.at.add(f);              
     this.eye.add(f);       
-    console.log("New coords: " + this.eye.elements)     
+    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));           
 }
 
 back() {
@@ -21,7 +21,7 @@ back() {
     f.mul(this.speed);       
     this.at.add(f);             
     this.eye.add(f);      
-    console.log("New coords: " + this.eye.elements)         
+    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 left() {
@@ -31,7 +31,7 @@ left() {
     s.div(s.magnitude());      
     this.at.add(s);             
     this.eye.add(s);             
-    console.log("New coords: " + this.eye.elements)  
+    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 right() {
@@ -42,7 +42,7 @@ right() {
     s.mul(-1);                   
     this.at.add(s);             
     this.eye.add(s);       
-    console.log("New coords: " + this.eye.elements)         
+    console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
 rotateLeft() {
