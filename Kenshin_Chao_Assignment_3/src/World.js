@@ -29,6 +29,7 @@ var FSHADER_SOURCE =`
   uniform sampler2D u_Sampler2;
   uniform sampler2D u_Sampler3;
   uniform int u_whichTexture;
+  uniform float u_texColorWeight; // New uniform to control blending
   void main() {
 
     if (u_whichTexture == -2){
@@ -64,6 +65,7 @@ let u_GlobalRotateMatrix;
 let u_Sampler0;
 let u_Sampler1;
 let u_Sampler2;
+let u_Sampler3;
 let u_whichTexture; 
 function setupWebGL(){
  // Retrieve <canvas> element
@@ -397,6 +399,21 @@ function sendImageToTEXTURE3(image){
   console.log("finished loadTexture");
 }
 
+function updateCameraDirection() {
+  let direction = new Vector3([
+      Math.cos(pitch) * Math.sin(yaw),
+      Math.sin(pitch),
+      Math.cos(pitch) * Math.cos(yaw)
+  ]);
+
+  // Update 'at' based on the new direction
+  console.log(" before: " + g_camera.at.elements);
+  g_camera.at = new Vector3(g_camera.eye.elements).add(direction);
+  console.log(" after: " + g_camera.at.elements);
+}
+let yaw = 0;   // Horizontal rotation
+let pitch = 0; // Vertical rotation
+const sensitivity = 0.005; // Adjust for smoother movement
 // let g_previewShape = null;
 function main() {
   setupWebGL();
@@ -410,7 +427,9 @@ function main() {
   initTextures();
   //canvas.onmousemove = click;
   canvas.onmousemove = function(ev) {
- 
+   
+
+
     if (ev.buttons == 1){ //left click
       click(ev);
     } 
@@ -440,16 +459,29 @@ let log = document.querySelector("#log");
 document.addEventListener("click", click);
 
 function click(ev){
-  console.log(blocks);
+
 
   
   [x,y] = convertCoordinatesEventToGL(ev);
-  if (y < .9 && ev.shiftKey == false){
-  g_globalAnglex = x*180;
-  g_globalAngley = y*180;
-  console.log(g_globalAngley)
+  // Function to Update Camera Direction Based on Yaw/Pitch
+let deltaX = ev.movementX || 0;
+let deltaY = ev.movementY || 0;
 
-  }
+// Update yaw (left/right rotation)
+yaw += deltaX * sensitivity;
+
+// Update pitch (up/down rotation) and clamp to prevent flipping
+pitch += deltaY * sensitivity;
+pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+
+updateCameraDirection();
+
+  // if (y < .9 && ev.shiftKey == false){
+  // g_globalAnglex = x*180;
+  // g_globalAngley = y*180;
+  // console.log(g_globalAngley)
+
+  // }
   log.textContent = ``;
   if (ev.shiftKey == true ){
     log.textContent = `:( ): `
@@ -623,70 +655,66 @@ function convertCoordinatesEventToGL(ev){
  
   var worldArray = [ //how tall cubes are made/
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,3,3,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1,4,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
+  [4,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
+  [4,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,4],
+  [4,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
   [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
   ];
   
+  
 
-  var blocks = new Set;
   function drawMap(){
     var block = new Cube();
     for (x = 0 ; x < 32 ; x++){
       for (z = 0; z < 32; z++){
         if (worldArray[x][z] > 0){
           for (n = 0; n < worldArray[x][z]; n++){
-      
-          block.color = [1,1,1,1];
-          block.textureNum = 1
-          block.matrix.setTranslate(0, -2, 0);
-          block.matrix.scale(1,1,1)
-          block.matrix.translate(x-16, 1+n, z-16);
-          let coordKey = `${x-16},${1 + n},${z-16}`; // Unique coordinate key
-
-          if (!blocks.has(coordKey)) { // Prevent duplicates
-              blocks.add(coordKey); // Store only coordinates
+          //let key = `${x-16},${1+n},${z-16}`; // Unique key based on position
+           // Check if this position is already occupied
+            let block = new Cube();
+            block.color = [1,1,1,1];
+            if (1+n == 2 || 1+n == 1){
+              block.textureNum = 3;
+            }
+            else {
+            block.textureNum = 1;
+            }
+            block.matrix.setTranslate(0, -2, 0);
+            block.matrix.scale(1,1,1);
+            block.matrix.translate(x-16, 1+n, z-16);
+            
+            block.renderfaster();
           }
-          if (x == 0 && z == 0){
-            //console.log(block.matrix.elements);
-          }
-
-          block.renderfaster(); 
         }
       }
-      }
-
-    } 
-    
-    //console.log("it ran")
+    }
   }
 
   function renderScene(){

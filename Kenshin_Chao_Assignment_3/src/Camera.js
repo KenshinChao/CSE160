@@ -1,6 +1,6 @@
 class Camera {
     constructor(){
-        this.eye = new Vector3([0,0,3]); //almost like location
+        this.eye = new Vector3([1,0,6]); //almost like location
         this.at = new Vector3([0,0,-100]);
         this.up = new Vector3([0,1,0]);
         this.speed = 1;
@@ -14,7 +14,7 @@ forward() {
     f.mul(this.speed);       
     this.at.add(f);              
     this.eye.add(f);     
-    printCoords(this); 
+    //printCoords(this); 
     // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));           
 }
 
@@ -24,7 +24,7 @@ back() {
     f.mul(this.speed);       
     this.at.add(f);             
     this.eye.add(f);      
-    printCoords(this); 
+   // printCoords(this); 
     // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
@@ -35,7 +35,7 @@ left() {
     s.div(s.magnitude());      
     this.at.add(s);             
     this.eye.add(s);     
-    printCoords(this);         
+    //printCoords(this);         
     // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
@@ -47,7 +47,7 @@ right() {
     s.mul(-1);                   
     this.at.add(s);             
     this.eye.add(s);       
-    printCoords(this);  
+    //printCoords(this);  
     // console.log("New coords: " + "x: " + Math.floor(this.eye.elements[0] * 1) + " y: " + Math.floor(this.eye.elements[1] * 1) + " z :" + Math.floor(this.eye.elements[2] * 1));         
 }
 
