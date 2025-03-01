@@ -11,6 +11,7 @@ var VSHADER_SOURCE =`
   attribute vec3 a_Normal;
   varying vec2 v_UV;
   varying vec3 v_Normal;
+  varying vec4 v_VertPos;
   uniform mat4 u_ModelMatrix;
   uniform mat4 u_GlobalRotateMatrix; 
   uniform mat4 u_ViewMatrix;
@@ -19,6 +20,7 @@ var VSHADER_SOURCE =`
    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
    v_UV = a_UV;
    v_Normal = a_Normal;
+   v_VertPos = u_ModelMatrix * a_Position;
   }`
 
 // Fragment shader program
@@ -31,6 +33,8 @@ var FSHADER_SOURCE =`
   uniform sampler2D u_Sampler1;
   uniform sampler2D u_Sampler2;
   uniform sampler2D u_Sampler3;
+  uniform vec3 u_lightPos;
+  varying vec4 v_VertPos;
   uniform int u_whichTexture;
   uniform float u_texColorWeight; // New uniform to control blending
   void main() {
@@ -39,7 +43,6 @@ var FSHADER_SOURCE =`
 
       gl_FragColor = vec4((v_Normal+1.0)/2.0, 1.0); 
   } else if (u_whichTexture == -2){
-
       gl_FragColor = u_FragColor;
     }else if(u_whichTexture == -1){
       gl_FragColor = vec4(v_UV,1.0,1.0);
@@ -56,6 +59,15 @@ var FSHADER_SOURCE =`
       else{
     gl_FragColor = vec4(1,.2,.2,1);
   }
+  vec3 lightVector = vec3(v_VertPos) - u_lightPos;
+  float r = length(lightVector);
+  if (r < 1.0){
+  gl_FragColor = vec4(1,0,0,1);
+
+  } else if (r < 2.0){
+  gl_FragColor = vec4(0,1,0,1);
+  }
+
   }`
 //Global Variables
 let canvas;
@@ -75,6 +87,7 @@ let u_Sampler2;
 let u_Sampler3;
 let u_whichTexture; 
 let g_normalON;
+let u_lightPos;
 function setupWebGL(){
  // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
@@ -173,11 +186,16 @@ function connectVariablesToGLSL(){
     }
 
     u_Sampler3 = gl.getUniformLocation(gl.program, 'u_Sampler3');
-    if (!u_Sampler2) {
+    if (!u_Sampler3) {
       console.log('Failed to get the storage location of u_Sampler3');
       return;
     }
 
+    u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
+    if (!u_lightPos) {
+      console.log('Failed to get the storage location of u_lightPos');
+      return;
+    }
 
 
     var identityM = new Matrix4();
@@ -235,6 +253,7 @@ let g_handAngle = 0;
 let g_Aanimation = false;
 let g_legAngle = 0;
 let mouthMove = false;
+let g_lightPos = [0,1,-2];
 let g_camera = new Camera();
 function addActionsForHtmlUI(){
   // document.getElementById('green').onclick = function() {
@@ -244,28 +263,50 @@ function addActionsForHtmlUI(){
   document.getElementById('normalOff').onclick = function() {g_normalON = false;
     // resetPreviewShape();
   }
-  document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
-    // resetPreviewShape();
-  }
-  document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
-    // resetPreviewShape();
-  }
+  // document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
+  //   // resetPreviewShape();
+  // }
+  // document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
+  //   // resetPreviewShape();
+  // }
 
 
 
   document.getElementById('angleSlide').addEventListener('mousemove', function() {
-    g_globalAngle = this.value; 
+    g_globalAnglex = this.value; 
     renderScene();
   });
-  document.getElementById('armSlide').addEventListener('mousemove', function() {
-    g_armAngle = this.value; 
+  document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { if(ev.buttons == 1){
+    g_lightPos[0] = this.value/100; 
     renderScene();
+  }
+  
+    
   });
 
-  document.getElementById('handSlide').addEventListener('mousemove', function() {
-    g_handAngle = this.value; 
+  document.getElementById('lightSlideY').addEventListener('mousemove', function(ev) { if(ev.buttons == 1){
+    g_lightPos[1] = this.value/100; 
     renderScene();
+  }
+  
+    
   });
+  document.getElementById('lightSlideZ').addEventListener('mousemove', function(ev) { if(ev.buttons == 1){
+    g_lightPos[2] = this.value/100; 
+    renderScene();
+  }
+  
+    
+  });
+  // document.getElementById('armSlide').addEventListener('mousemove', function() {
+  //   g_armAngle = this.value; 
+  //   renderScene();
+  // });
+
+  // document.getElementById('handSlide').addEventListener('mousemove', function() {
+  //   g_handAngle = this.value; 
+  //   renderScene();
+  // });
 
 
 
@@ -488,33 +529,36 @@ function click(ev){
   // Function to Update Camera Direction Based on Yaw/Pitch
 let deltaX = ev.movementX || 0;
 let deltaY = ev.movementY || 0;
-
-// Update yaw (left/right rotation)
-yaw += deltaX * sensitivity;
-
-// Update pitch (up/down rotation) and clamp to prevent flipping
-pitch += deltaY * sensitivity;
-pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
-
-updateCameraDirection();
-
-  // if (y < .9 && ev.shiftKey == false){
-  // g_globalAnglex = x*180;
-  // g_globalAngley = y*180;
-  // console.log(g_globalAngley)
-
-  // }
-  log.textContent = ``;
-  if (ev.shiftKey == true ){
-    log.textContent = `:( ): `
-    if (mouthMove){
-      mouthMove = false;
-    }
-    else {
-    mouthMove = true;
-    }
+if (y < .9 && ev.shiftKey == false){
+  g_globalAnglex = x*180;
   }
+// // Update yaw (left/right rotation)
+// yaw += deltaX * sensitivity;
+
+// // Update pitch (up/down rotation) and clamp to prevent flipping
+// pitch += deltaY * sensitivity;
+// pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+
+// updateCameraDirection();
+
+//   // if (y < .9 && ev.shiftKey == false){
+//   // g_globalAnglex = x*180;
+//   // g_globalAngley = y*180;
+//   // console.log(g_globalAngley)
+
+//   // }
+//   log.textContent = ``;
+//   if (ev.shiftKey == true ){
+//     log.textContent = `:( ): `
+//     if (mouthMove){
+//       mouthMove = false;
+//     }
+//     else {
+//     mouthMove = true;
+//     }
+//   }
     
+// }
 }
 
 var g_startTime = performance.now()/1000.0;
@@ -675,78 +719,78 @@ function convertCoordinatesEventToGL(ev){
   // var g_up = [0,1,0];
 
  
-  var worldArray = [ //how tall cubes are made/
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,3,3,3,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1,4,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
-  [4,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,4],
-  [4,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
-  [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  ];
+  // var worldArray = [ //how tall cubes are made/
+  // [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,3,3,3,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1,4,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
+  // [4,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,4],
+  // [4,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
+  // [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
+  // [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  // ];
   
   
 
-  function drawMap(){
-    var block = new Cube();
-    for (x = 0 ; x < 32 ; x++){
-      for (z = 0; z < 32; z++){
-        if (worldArray[x][z] > 0){
-          for (n = 0; n < worldArray[x][z]; n++){
-          //let key = `${x-16},${1+n},${z-16}`; // Unique key based on position
-           // Check if this position is already occupied
-            let block = new Cube();
-            block.color = [1,1,1,1];
-            if (1+n == 2 || 1+n == 1){
-              block.textureNum = 3;
-            }
-            else {
-            block.textureNum = 1;
-            }
-            block.matrix.setTranslate(0, -2, 0);
-            block.matrix.scale(1,1,1);
-            block.matrix.translate(x-16, 1+n, z-16);
-            if (g_normalON){
-              block.textureNum = -3;
-            }
-            block.renderWithNorms();
-          }
-        }
-      }
-    }
-  }
+  // function drawMap(){
+  //   var block = new Cube();
+  //   for (x = 0 ; x < 32 ; x++){
+  //     for (z = 0; z < 32; z++){
+  //       if (worldArray[x][z] > 0){
+  //         for (n = 0; n < worldArray[x][z]; n++){
+  //         //let key = `${x-16},${1+n},${z-16}`; // Unique key based on position
+  //          // Check if this position is already occupied
+  //           let block = new Cube();
+  //           block.color = [1,1,1,1];
+  //           if (1+n == 2 || 1+n == 1){
+  //             block.textureNum = 3;
+  //           }
+  //           else {
+  //           block.textureNum = 1;
+  //           }
+  //           block.matrix.setTranslate(0, -2, 0);
+  //           block.matrix.scale(1,1,1);
+  //           block.matrix.translate(x-16, 1+n, z-16);
+  //           if (g_normalON){
+  //             block.textureNum = -3;
+  //           }
+  //           block.renderWithNorms();
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   function renderScene(){
     var startTime = performance.now();
 
     var projMat = new Matrix4();
 
-    projMat.setPerspective(60, 1*canvas.width/canvas.height, 1, 10000);
+    projMat.setPerspective(60, 1*canvas.width/canvas.height, .1, 10000);
     gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
     var viewMat = new Matrix4();
@@ -776,39 +820,39 @@ function convertCoordinatesEventToGL(ev){
     gl.clear(gl.COLOR_BUFFER_BIT);
   //var len = g_points.length
 
-  drawMap();
+  //drawMap();
   
 
 
-  if (g_Aanimation){
-//   var K = 8;
-// for (var i = 1; i < K; i++){
-//   var c = new Cube();
-//   c.matrix.translate(-.9,Math.random()+i/K-1,.8);
-//   c.matrix.scale(.02,.05,.02)
-//   c.renderfast();
-// }
-// var K = 8;
-// for (var i = 1; i < K; i++){
-//   var c = new Cube();
-//   c.matrix.translate(.9,Math.random()+i/K-.2,.5);
-//   c.matrix.scale(.02,.05,.02)
-//   c.renderfast();
-// }
-// for (var i = 1; i < K; i++){
-//   var c = new Cube();
-//   c.matrix.translate(.2,Math.random()+i/K-.5,.4);
-//   c.matrix.scale(.02,.05,.02)
-//   c.renderfast();
-// }
-// var K = 4;
-// for (var i = 1; i < K; i++){
-//   var c = new Cube();
-//   c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
-//   c.matrix.scale(.02,.05,.02)
-//   c.renderfast();
-// }
-  }
+//   if (g_Aanimation){
+// //   var K = 8;
+// // for (var i = 1; i < K; i++){
+// //   var c = new Cube();
+// //   c.matrix.translate(-.9,Math.random()+i/K-1,.8);
+// //   c.matrix.scale(.02,.05,.02)
+// //   c.renderfast();
+// // }
+// // var K = 8;
+// // for (var i = 1; i < K; i++){
+// //   var c = new Cube();
+// //   c.matrix.translate(.9,Math.random()+i/K-.2,.5);
+// //   c.matrix.scale(.02,.05,.02)
+// //   c.renderfast();
+// // }
+// // for (var i = 1; i < K; i++){
+// //   var c = new Cube();
+// //   c.matrix.translate(.2,Math.random()+i/K-.5,.4);
+// //   c.matrix.scale(.02,.05,.02)
+// //   c.renderfast();
+// // }
+// // var K = 4;
+// // for (var i = 1; i < K; i++){
+// //   var c = new Cube();
+// //   c.matrix.translate(-.2,Math.random()+i/K-1.4,-.2);
+// //   c.matrix.scale(.02,.05,.02)
+// //   c.renderfast();
+// // }
+//   }
    
   let rotateAnimal = new Matrix4();
   rotateAnimal.rotate(180, 0, 1, 0); // Rotate 180 degrees around Y-axis
@@ -818,9 +862,17 @@ function convertCoordinatesEventToGL(ev){
     if (g_normalON){
       skybox.textureNum = -3;
     }
-    skybox.matrix.scale(1000,1000,1000);
-    skybox.matrix.translate(-0.5,-0.5,-0.5);
+    skybox.matrix.scale(20,20,20);
+    skybox.matrix.translate(-0.5,-0.5,-.25);
     skybox.renderWithNorms();    
+
+     gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+    var light = new Cube();
+    light.color = [2,2,0,1];
+    light.matrix.translate(g_lightPos[0],g_lightPos[1],g_lightPos[2]);
+    light.matrix.scale(.5,.5,.5);
+    light.matrix.translate(-.5,-.5,-.5);
+    light.render();
 
     var groundPlane = new Cube();
     groundPlane.textureNum = 2;
@@ -828,17 +880,16 @@ function convertCoordinatesEventToGL(ev){
     groundPlane.matrix.translate(-16,-2,-16);
     groundPlane.matrix.scale(32, 1, 32);
     groundPlane.renderWithNorms();
-
     
-    var body = new Cube();
-    body.color = [1, 0.6, 1, 1];
-    body.textureNum = -2;
-    body.matrix.translate(-.25, -.5, 0);
-    body.matrix.scale(.6, .6, .6);
+    var sphere = new Sphere();
+    // sphere.matrix.scale(20,20,20);
     if (g_normalON){
-      body.textureNum = -3;
+      sphere.textureNum = -3;
     }
-    body.renderWithNorms();
+    sphere.matrix.translate(1,0,-2)
+    
+    sphere.render();
+    
 
     // var leftArm = new Cube();
     // leftArm.color = [1,1,0,1];
@@ -847,181 +898,6 @@ function convertCoordinatesEventToGL(ev){
     // // leftArm.matrix.rotate(45, 0, 0, 1);
     // leftArm.matrix.scale(0.25, .7, .5);
     // leftArm.render();
-    
-    var leftarm = new Cube();
-    leftarm.color = [1, 0.6, 1, 1];
-    leftarm.matrix.setTranslate(-.15,-.3,.4);
-    
-    leftarm.matrix.rotate(180, 0, 90,1);
-    leftarm.matrix.rotate(g_armAngle, 0, 0,1);
-    // if (g_Aanimation){
-    //     leftarm.matrix.rotate(25*Math.sin(g_seconds), 0, 0,1);
-    // }
-    // else {
-    //   leftarm.matrix.rotate(g_armAngle, 0, 0, 1);
-    // }
-  
-    var lArmCoord = new Matrix4(leftarm.matrix);
-    leftarm.matrix.scale(0.3, .23, .3);
-    if (g_normalON){
-      leftarm.textureNum = -3;
-    }
-    leftarm.renderWithNorms();
-
-    var lefthand = new Cube();
-    lefthand.color = [1, 0.6, 1, 1];
-    lefthand.matrix = lArmCoord;
-    lefthand.matrix.translate(.3, 0,0);
-    lefthand.matrix.rotate(10, 0, 0,1);
-    lefthand.matrix.rotate(g_handAngle, 0, 0, 1);
-    lefthand.matrix.scale(0.3, .23, .3);
-    
-    lefthand.renderWithNorms();
-
-
-    var rightarm = new Cube();
-    rightarm.color = [1, 0.6, 1, 1];
-    rightarm.matrix.setTranslate(.2, -.3,.2);
-    rightarm.matrix.rotate(-15, 0, 0,1);
-    rightarm.matrix.rotate(g_armAngle, 0, 0,1);
-  //   if (g_Aanimation){
-  //     rightarm.matrix.rotate(15*Math.sin(g_seconds), 0, 0,1);
-  // }
-  // else {
-  //   rightarm.matrix.rotate(g_armSlider, 0, 0,1);
-  // }
-   
-    var rArmCoord = new Matrix4(rightarm.matrix);
-    rightarm.matrix.scale(0.3, .23, .3);
-    if (g_normalON){
-      rightarm.textureNum = -3;
-    }
-    rightarm.renderWithNorms();
-    
-    
-    var righthand = new Cube();
-    righthand.color = [1, 0.6, 1, 1];
-    righthand.matrix = rArmCoord;
-    righthand.matrix.translate(.3, 0,0);
-     righthand.matrix.rotate(10, 0, 0,1);
-    righthand.matrix.rotate(g_handAngle, 0, 0,1);
-     righthand.matrix.scale(0.3, .23, .3);
-     if (g_normalON){
-      righthand.textureNum = -3;
-    }
-     righthand.renderWithNorms();
-
-
-    var righteye = new Cube();
-    righteye.color = [0,0,0,1];
-    righteye.matrix.setTranslate(0.12, -.25,.35);
-    righteye.matrix.rotate(0, 0, 0,1);
-  
-    righteye.matrix.scale(0.12, .25, .3);
-    
-    righteye.renderWithNorms();
-    
-
-    var rightlight = new Cube();
-    rightlight.color = [1,1,1,1];
-    rightlight.matrix.setTranslate(0.115, -.1,.36);
-    rightlight.matrix.rotate(0, 0, 0,1);
-  
-    rightlight.matrix.scale(0.055, .045, .3);
-    rightlight.renderWithNorms();
-
-
-
-    var lefteye = new Cube();
-    lefteye.color = [0,0,0,1];
-    lefteye.matrix.setTranslate(-0.15, -.25,.35);
-    lefteye.matrix.rotate(0, 0, 0,1);
-  
-    lefteye.matrix.scale(0.12, .25, .3);
-    lefteye.renderWithNorms();
-
-    var leftlight = new Cube();
-    lefteye.color = [1,1,1,1];
-    lefteye.matrix.setTranslate(-0.156, -.1,.36);
-    lefteye.matrix.rotate(0, 0, 0,1);
-  
-    lefteye.matrix.scale(0.055, .045, .3);
-    lefteye.renderWithNorms();
-
-    var lmouth = new Cube();
-    lmouth.color = [0,0,0,1];
-    lmouth.matrix.setTranslate(0.05, -.32,.35);
-    lmouth.matrix.rotate(180+g_mouthAngle, 0, 0,1);
-  
-    lmouth.matrix.scale(0.06, .02, .3);
-    lmouth.renderWithNorms();
-
-    var rmouth = new Cube();
-    rmouth.color = [0,0,0,1];
-    rmouth.matrix.setTranslate(0.05, -.34,.35);
-    rmouth.matrix.rotate(0-g_mouthAngle, 0, 0,1);
-  
-    rmouth.matrix.scale(0.06, .02, .3);
-    rmouth.renderWithNorms();
-    
-    
-    var lblush = new Cube();
-    lblush.color = [1,0,0,1];
-    lblush.matrix.setTranslate(0.2, -.32,.35);
-    lblush.matrix.rotate(0, 0, 0,1);
-  
-    lblush.matrix.scale(0.09, .05, .3);
-    lblush.renderWithNorms();
-
-    var rblush = new Cube();
-    rblush.color = [1,0,0,1];
-    rblush.matrix.setTranslate(-0.2, -.32,.35);
-    rblush.matrix.rotate(0, 0, 0,1);
-  
-    rblush.matrix.scale(0.09, .05, .3);
-    rblush.renderWithNorms();
-    
-
-        
-    var lLeg = new Cube();
-    lLeg.color = [.9,.34,1,1];
-    lLeg.matrix.setTranslate(-.2,-.45,.2);
-    lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
-    var lLegCoords = new Matrix4(lLeg.matrix);
-    lLeg.matrix.scale(0.35, .2, .3);
-    if (g_normalON){
-      lLeg.textureNum = -3;
-    }
-    lLeg.renderWithNorms();
-
-    var rLeg = new Cube();
-    rLeg.color = [.9,.34,1,1];
-    rLeg.matrix.setTranslate(.1, -.45,.2);
-    rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
-    var rLegCoords = new Matrix4(rLeg.matrix);
-    rLeg.matrix.scale(0.35, .2, .3);
-    if (g_normalON){
-      rLeg.textureNum = -3;
-    }
-    rLeg.renderWithNorms();
-
-    var lFoot = new Cube();
-    lFoot.color = [1,0,1,1];
-    lFoot.matrix = lLegCoords;
-    lFoot.matrix.translate(0.35, .2,0);
-    lFoot.matrix.rotate(270, 0, 0,1);
-    lFoot.matrix.scale(0.3, .1, .3);
-    lFoot.renderWithNorms();
-
-    
-    var rFoot = new Cube();
-    rFoot.color = [1,0,1,1];
-    rFoot.matrix = rLegCoords;
-    rFoot.matrix.translate(.35, .3,0);
-    rFoot.matrix.rotate(270, 0, 0,1);
-    rFoot.matrix.scale(0.3, .1, .3);
-    rFoot.renderWithNorms();
-
 
 
 

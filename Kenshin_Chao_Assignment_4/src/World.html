@@ -34,18 +34,19 @@
     <p></p> -->
     
     <p>Hold left click and move your mouse in the canvas to rotate</p>
-    <p>Hold shift and left click to make a face! Time it by shift-clicking again to stop!</p>
-    <p>wasd to move and q e to rotate. C to place, V to delete (deletes blocks from top down)</p>
-<p id="log"></p>
-   ArmSlider <input type = "range" min = "0" max = "45" value = "0" class = "slider" id = "armSlide">
-   <p></p>
-   HandSlider <input type = "range" min = "0" max = "45" value = "0" class = "slider" id = "handSlide">
-   <p></p>
-    Camera Angle <input type = "range" min = "-90" max = "90" value = "0" class = "slider" id = "angleSlide">
+   
+    <p id="log"></p>
+    Camera Angle <input type = "range" min = "-180" max = "180" value = "0" class = "slider" id = "angleSlide">
     <p></p>
-    Falling Animation
+    Light X <input type = "range" min = "-250" max = "250" value = "0" class = "slider" id = "lightSlideX">
+    <p></p>
+    Light Y <input type = "range" min = "-250" max = "250" value = "0" class = "slider" id = "lightSlideY">
+    <p></p>
+    Light Z <input type = "range" min = "-1300" max = "250" value = "0" class = "slider" id = "lightSlideZ">
+    <p></p>
+    <!-- Falling Animation
     <button id="animationOn">ON</button>
-    <button id="animationOff">OFF</button>
+    <button id="animationOff">OFF</button> -->
     <p>
     </p>
     Normal
@@ -58,10 +59,10 @@
     <script src="lib/cuon-utils.js"></script>
     <script src="PointClass.js"></script>
     <script src="CubeClass.js"></script>
+    <script src="SphereClass.js"></script>
     <script src="Camera.js"></script>
     <script src= "lib/cuon-matrix-cse160.js"></script>
     <script src="TriangleClass.js"></script>
-    <script src="CircleClass.js"></script>
     <script src="World.js"></script>
 
   </body>

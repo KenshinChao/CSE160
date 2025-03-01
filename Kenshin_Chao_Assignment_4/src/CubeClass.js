@@ -7,7 +7,7 @@ class Cube{
       // this.size = 5.0;
       // this.segments = 10;
       this.matrix = new Matrix4();
-      this.textureNum = -2;
+      this.textureNum = -3;
       this.cubeVerts32 = new Float32Array([
         0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0,
         0.0,0.0,0.0, 0.0,1.0,0.0, 1,1.0,0.0,
@@ -202,7 +202,7 @@ drawTriangle3DUVNormal([0.0,1.0,0.0, 0.0,1.0,1.0, 0.0,0.0,1.0], [1,1, 0,1, 0,0],
 
 //back 
 drawTriangle3DUVNormal([0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,1.0,1.0], [0,0, 0,1, 1,1],[0,0,1, 0,0,1, 0,0,1]);
-drawTriangle3DUVNormal([0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0], [0,0, 1,0, 1,1],[0,0,1, 0,0,1, 0,0,1] );
+drawTriangle3DUVNormal([0.0,0.0,1.0, 1.0,0.0,1.0, 1,1.0,1.0], [0,0, 1,0, 1,1],[0,0,1, 0,0,1, 0,0,1]);
 
 }
 
