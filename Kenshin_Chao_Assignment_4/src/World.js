@@ -38,10 +38,12 @@ var FSHADER_SOURCE =`
   uniform sampler2D u_Sampler3;
   uniform vec3 u_lightPos;
   uniform vec3 u_cameraPos;
+  uniform vec3 u_LightColor; 
   varying vec4 v_VertPos;
   uniform int u_whichTexture;
-  uniform bool u_lightOn;
-
+  uniform bool u_lightOn;  
+  uniform vec3 u_spotlightDir;  
+  uniform float u_spotlightCutoff; 
   uniform float u_texColorWeight; // New uniform to control blending
   void main() {
 
@@ -64,34 +66,54 @@ var FSHADER_SOURCE =`
       else{
     gl_FragColor = vec4(1,.2,.2,1);
   }
-  vec3 lightVector = u_lightPos -  vec3(v_VertPos);
-  float r = length(lightVector);
-  // if (r < 1.0){
-  // gl_FragColor = vec4(1,0,0,1);
+  // vec3 lightVector = u_lightPos -  vec3(v_VertPos);
+  // float r = length(lightVector);
+  // // if (r < 1.0){
+  // // gl_FragColor = vec4(1,0,0,1);
 
   // } else if (r < 2.0){
   // gl_FragColor = vec4(0,1,0,1); 
   // }
   // gl_FragColor = vec4(vec3(gl_FragColor)/(r*r),1);
-  vec3 L = normalize(lightVector);
-  vec3 N = normalize(v_Normal);
-  float nDotL = max(dot(N,L), 0.0);
+  // vec3 L = normalize(lightVector);
+  // vec3 N = normalize(v_Normal);
+  // float nDotL = max(dot(N,L), 0.0);
 
-  vec3 R = reflect(-L,N);
+  // vec3 R = reflect(-L,N);
 
-  vec3 E = normalize(u_cameraPos-vec3(v_VertPos));
+  // vec3 E = normalize(u_cameraPos-vec3(v_VertPos));
 
-  float specular = pow(max(dot(E,R), 0.0), 64.0) * 0.8;
-  vec3 diffuse = vec3(1.0, 1.0, 0.9) * vec3(gl_FragColor) * nDotL * 0.7;
-  vec3 ambient = vec3(gl_FragColor) * 0.3;
-  if (u_lightOn == true){
-    gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
-    }
-  else {
-      gl_FragColor = vec4(diffuse+ambient,1.0);
+  // float specular = pow(max(dot(E,R), 0.0), 64.0) * 0.8;
+  // vec3 diffuse = vec3(1.0, 1.0, 0.9) * vec3(gl_FragColor) * nDotL * 0.7;
+  // vec3 ambient = vec3(gl_FragColor) * 0.3;
+  // if (u_lightOn == true){
+  //   gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
+  //   }
+  // else {
+  //     gl_FragColor = vec4(diffuse+ambient,1.0);
    
+  //}
+  vec3 lightVector = normalize(u_lightPos - vec3(v_VertPos)); // Direction to fragment
+  vec3 normal = normalize(v_Normal);
+
+  // Compute spotlight effect
+  float spotEffect = dot(lightVector, normalize(-u_spotlightDir));
+  if (u_lightOn == true){
+    if (spotEffect > u_spotlightCutoff) {  // Inside the spotlight cone
+        float intensity = pow(spotEffect, 10.0); // Smooth falloff
+        vec3 diffuse = u_LightColor * vec3(gl_FragColor) * max(dot(normal, lightVector), 0.0) * intensity * 0.7;
+        vec3 ambient = u_LightColor * vec3(gl_FragColor) * 0.2;
+
+        gl_FragColor = vec4(diffuse + ambient, 1.0);
+    } else { 
+        gl_FragColor = vec4(vec3(gl_FragColor) * 0.2, 1.0); 
+    }
+  }
+  else {
+  gl_FragColor = vec4(vec3(gl_FragColor) * 0.2, 1.0); 
   }
 }`
+
 //Global Variables
 let canvas;
 let gl;
@@ -114,6 +136,10 @@ let u_lightPos;
 let u_lightOn;
 let u_cameraPos;
 let u_NormalMatrix;
+let u_spotlightCutoff;
+let u_spotlightDir;
+let u_spotlightPos;
+let u_LightColor;
 function setupWebGL(){
  // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
@@ -229,11 +255,29 @@ function connectVariablesToGLSL(){
       return;
     }
 
-    u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
-    if (!u_cameraPos) {
-      console.log('Failed to get the storage location of u_cameraPos');
+    u_spotlightCutoff = gl.getUniformLocation(gl.program, 'u_spotlightCutoff');
+    if (!u_spotlightCutoff) {
+      console.log('Failed to get the storage location of u_spotlightCutoff');
       return;
     }
+    u_spotlightDir = gl.getUniformLocation(gl.program, 'u_spotlightDir');
+    if (!u_spotlightDir) {
+      console.log('Failed to get the storage location of u_spotlightDir');
+      return;
+    }
+
+    u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
+if (!u_LightColor) {
+  console.log('Failed to get the storage location of u_LightColor');
+  return;
+}
+
+
+    // u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
+    // if (!u_cameraPos) {
+    //   console.log('Failed to get the storage location of u_cameraPos');
+    //   return;
+    // }
 
     u_lightOn = gl.getUniformLocation(gl.program, 'u_lightOn');
     if (!u_lightOn) {
@@ -302,6 +346,7 @@ let g_lightPos = [-.5,3,-1];
 let g_camera = new Camera();
 let g_lightOn = false;
 let lightAnim = true;
+let lightColor = [1.0, 1.0, 1.0]; // Default white light
 function addActionsForHtmlUI(){
   // document.getElementById('green').onclick = function() {
   document.getElementById('normalOn').onclick = function() {g_normalON = true;
@@ -331,6 +376,24 @@ function addActionsForHtmlUI(){
   document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
     // resetPreviewShape();
   }
+
+  document.getElementById("lightR").addEventListener('mousemove', function(ev) {if(ev.buttons == 1){
+    lightColor[0] = this.value/255; 
+    renderScene();
+  }
+  });
+  
+  document.getElementById("lightG").addEventListener('mousemove', function(ev) {if(ev.buttons == 1){
+    lightColor[1] = this.value/255; 
+    renderScene();
+  }
+  });
+  
+  document.getElementById("lightB").addEventListener('mousemove', function(ev) {if(ev.buttons == 1){
+    lightColor[2] = this.value/255; 
+    renderScene();
+  }
+  });
 
 
 
@@ -895,6 +958,11 @@ function convertCoordinatesEventToGL(ev){
     gl.uniform3f(u_cameraPos, g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
  
     gl.uniform1i(u_lightOn, g_lightOn);
+    //gl.uniform3f(u_spotlightPos, 0.0, 5.0, 0.0);  
+    gl.uniform3f(u_spotlightDir, 0.0, -1.0, 0.0); 
+    gl.uniform1f(u_spotlightCutoff, Math.cos(30.0 * Math.PI / 180.0)); // 20-degree cutoff
+
+    gl.uniform3f(u_LightColor, lightColor[0], lightColor[1], lightColor[2]);
   //var len = g_points.length
 
   //drawMap();
