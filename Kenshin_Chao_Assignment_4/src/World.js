@@ -325,12 +325,12 @@ function addActionsForHtmlUI(){
   document.getElementById('lightAnimOff').onclick = function() {lightAnim = false;
     // resetPreviewShape();
   }
-  // document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
-  //   // resetPreviewShape();
-  // }
-  // document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
-  //   // resetPreviewShape();
-  // }
+  document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
+    // resetPreviewShape();
+  }
+  document.getElementById('animationOff').onclick = function() {g_Aanimation = false;
+    // resetPreviewShape();
+  }
 
 
 
@@ -786,71 +786,71 @@ function convertCoordinatesEventToGL(ev){
   // var g_up = [0,1,0];
 
  
-  // var worldArray = [ //how tall cubes are made/
-  // [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,3,3,3,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1,4,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
-  // [4,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,4],
-  // [4,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
-  // [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
-  // [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  // ];
+  var worldArray = [ //how tall cubes are made/
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,3,3,3,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1,4,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4],
+  [4,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,4],
+  [4,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,4],
+  [4,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  ];
   
   
 
-  // function drawMap(){
-  //   var block = new Cube();
-  //   for (x = 0 ; x < 32 ; x++){
-  //     for (z = 0; z < 32; z++){
-  //       if (worldArray[x][z] > 0){
-  //         for (n = 0; n < worldArray[x][z]; n++){
-  //         //let key = `${x-16},${1+n},${z-16}`; // Unique key based on position
-  //          // Check if this position is already occupied
-  //           let block = new Cube();
-  //           block.color = [1,1,1,1];
-  //           if (1+n == 2 || 1+n == 1){
-  //             block.textureNum = 3;
-  //           }
-  //           else {
-  //           block.textureNum = 1;
-  //           }
-  //           block.matrix.setTranslate(0, -2, 0);
-  //           block.matrix.scale(1,1,1);
-  //           block.matrix.translate(x-16, 1+n, z-16);
-  //           if (g_normalON){
-  //             block.textureNum = -3;
-  //           }
-  //           block.renderWithNorms();
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+  function drawMap(){
+    var block = new Cube();
+    for (x = 0 ; x < 32 ; x++){
+      for (z = 0; z < 32; z++){
+        if (worldArray[x][z] > 0){
+          for (n = 0; n < worldArray[x][z]; n++){
+          //let key = `${x-16},${1+n},${z-16}`; // Unique key based on position
+           // Check if this position is already occupied
+            let block = new Cube();
+            block.color = [1,1,1,1];
+            if (1+n == 2 || 1+n == 1){
+              block.textureNum = 3;
+            }
+            else {
+            block.textureNum = 1;
+            }
+            block.matrix.setTranslate(0, -2, 0);
+            block.matrix.scale(1,1,1);
+            block.matrix.translate(x-16, 1+n, z-16);
+            if (g_normalON){
+              block.textureNum = -3;
+            }
+            block.renderWithNorms();
+          }
+        }
+      }
+    }
+  }
 
   function renderScene(){
     var startTime = performance.now();
@@ -986,15 +986,285 @@ function convertCoordinatesEventToGL(ev){
   sphere.render();
   
 
-    // var leftArm = new Cube();
-    // leftArm.color = [1,1,0,1];
-    // leftArm.matrix.setTranslate(.7, 0, 0);
-    // leftArm.matrix.rotate(45, 0, 0, 1);
-    // // leftArm.matrix.rotate(45, 0, 0, 1);
-    // leftArm.matrix.scale(0.25, .7, .5);
-    // leftArm.render();
+    
+  var body = new Cube();
+  body.color = [1, 0.6, 1, 1];
+  body.textureNum = -2;
+  body.matrix.translate(-.25, -.5, 0);
+  body.matrix.scale(.6, .6, .6);
+  if (g_normalON){
+    body.textureNum = -3;
+  }
+  else {
+    body.textureNum = -2;
+  }
+
+  body.normalMatrix.setInverseOf(body.matrix).transpose();
+  body.renderWithNorms();
+
+  // var leftArm = new Cube();
+  // leftArm.color = [1,1,0,1];
+  // leftArm.matrix.setTranslate(.7, 0, 0);
+  // leftArm.matrix.rotate(45, 0, 0, 1);
+  // // leftArm.matrix.rotate(45, 0, 0, 1);
+  // leftArm.matrix.scale(0.25, .7, .5);
+  // leftArm.render();
+  
+  var leftarm = new Cube();
+  leftarm.color = [1, 0.6, 1, 1];
+  leftarm.matrix.setTranslate(-.15,-.3,.4);
+  
+  leftarm.matrix.rotate(180, 0, 90,1);
+  leftarm.matrix.rotate(g_armAngle, 0, 0,1);
+  if (g_Aanimation){
+      leftarm.matrix.rotate(25*Math.sin(g_seconds), 0, 0,1);
+  }
+  else {
+    leftarm.matrix.rotate(g_armAngle, 0, 0, 1);
+  }
+
+  var lArmCoord = new Matrix4(leftarm.matrix);
+  leftarm.matrix.scale(0.3, .23, .3);
+  if (g_normalON){
+    leftarm.textureNum = -3;
+  }
+  else {
+    leftarm.textureNum = -2;
+  }
+  leftarm.normalMatrix.setInverseOf(leftarm.matrix).transpose();
+  leftarm.renderWithNorms();
+
+  var lefthand = new Cube();
+  lefthand.color = [1, 0.6, 1, 1];
+  if (g_normalON){
+    lefthand.textureNum = -3;
+  }
+  else {
+    lefthand.textureNum = -2;
+  }
+  lefthand.matrix = lArmCoord;
+  lefthand.matrix.translate(.3, 0,0);
+  lefthand.matrix.rotate(10, 0, 0,1);
+  lefthand.matrix.rotate(g_handAngle, 0, 0, 1);
+  lefthand.matrix.scale(0.3, .23, .3);
+  
+  lefthand.renderWithNorms();
 
 
+  var rightarm = new Cube();
+  rightarm.color = [1, 0.6, 1, 1];
+  rightarm.matrix.setTranslate(.2, -.3,.2);
+  rightarm.matrix.rotate(-15, 0, 0,1);
+  rightarm.matrix.rotate(g_armAngle, 0, 0,1);
+//   if (g_Aanimation){
+//     rightarm.matrix.rotate(15*Math.sin(g_seconds), 0, 0,1);
+// }
+// else {
+//   rightarm.matrix.rotate(g_armSlider, 0, 0,1);
+// }
+ 
+  var rArmCoord = new Matrix4(rightarm.matrix);
+  rightarm.matrix.scale(0.3, .23, .3);
+  if (g_normalON){
+    rightarm.textureNum = -3;
+  }
+  else {
+    rightarm.textureNum = -2;
+  }
+  rightarm.renderWithNorms();
+  
+  
+  var righthand = new Cube();
+  righthand.color = [1, 0.6, 1, 1];
+  righthand.matrix = rArmCoord;
+  righthand.matrix.translate(.3, 0,0);
+   righthand.matrix.rotate(10, 0, 0,1);
+  righthand.matrix.rotate(g_handAngle, 0, 0,1);
+   righthand.matrix.scale(0.3, .23, .3);
+   if (g_normalON){
+    righthand.textureNum = -3;
+  }
+   righthand.renderWithNorms();
+
+
+  var righteye = new Cube();
+  righteye.color = [0,0,0,1];
+  righteye.matrix.setTranslate(0.12, -.25,.35);
+  righteye.matrix.rotate(0, 0, 0,1);
+
+  righteye.matrix.scale(0.12, .25, .3);
+  if (g_normalON){
+    righteye.textureNum = -3;
+  }
+  else {
+    righteye.textureNum = -2;
+  }
+  righteye.renderWithNorms();
+  
+
+  var rightlight = new Cube();
+  rightlight.color = [1,1,1,1];
+  rightlight.matrix.setTranslate(0.115, -.1,.36);
+  rightlight.matrix.rotate(0, 0, 0,1);
+
+  rightlight.matrix.scale(0.055, .045, .3);
+  if (g_normalON){
+    rightlight.textureNum = -3;
+  }
+  else {
+    rightlight.textureNum = -2;
+  }
+  rightlight.renderWithNorms();
+
+
+
+  var lefteye = new Cube();
+  lefteye.color = [0,0,0,1];
+  lefteye.matrix.setTranslate(-0.15, -.25,.35);
+  lefteye.matrix.rotate(0, 0, 0,1);
+
+  lefteye.matrix.scale(0.12, .25, .3);
+  if (g_normalON){
+    lefteye.textureNum = -3;
+  }
+  else {
+    lefteye.textureNum = -2;
+  }
+  lefteye.renderWithNorms();
+
+  var leftlight = new Cube();
+  leftlight.color = [1,1,1,1];
+  leftlight.matrix.setTranslate(-0.156, -.1,.36);
+  leftlight.matrix.rotate(0, 0, 0,1);
+
+  leftlight.matrix.scale(0.055, .045, .3);
+  if (g_normalON){
+    leftlight.textureNum = -3;
+  }
+  else {
+    leftlight.textureNum = -2;
+  }
+  leftlight.renderWithNorms();
+
+  var lmouth = new Cube();
+  lmouth.color = [0,0,0,1];
+  lmouth.matrix.setTranslate(0.05, -.32,.35);
+  lmouth.matrix.rotate(180+g_mouthAngle, 0, 0,1);
+
+  lmouth.matrix.scale(0.06, .02, .3);
+  if (g_normalON){
+    lmouth.textureNum = -3;
+  }
+  else {
+    lmouth.textureNum = -2;
+  }
+  lmouth.renderWithNorms();
+
+  var rmouth = new Cube();
+  rmouth.color = [0,0,0,1];
+  rmouth.matrix.setTranslate(0.05, -.34,.35);
+  rmouth.matrix.rotate(0-g_mouthAngle, 0, 0,1);
+
+  rmouth.matrix.scale(0.06, .02, .3);
+  if (g_normalON){
+    rmouth.textureNum = -3;
+  }
+  else {
+    rmouth.textureNum = -2;
+  }
+  rmouth.renderWithNorms();
+  
+  
+  var lblush = new Cube();
+  lblush.color = [1,0,0,1];
+  lblush.matrix.setTranslate(0.2, -.32,.35);
+  lblush.matrix.rotate(0, 0, 0,1);
+
+  lblush.matrix.scale(0.09, .05, .3);
+  if (g_normalON){
+    lblush.textureNum = -3;
+  }
+  else {
+    lblush.textureNum = -2;
+  }
+  lblush.renderWithNorms();
+
+  var rblush = new Cube();
+  rblush.color = [1,0,0,1];
+  rblush.matrix.setTranslate(-0.2, -.32,.35);
+  rblush.matrix.rotate(0, 0, 0,1);
+
+  rblush.matrix.scale(0.09, .05, .3);
+  if (g_normalON){
+    rblush.textureNum = -3;
+  }
+  else {
+    rblush.textureNum = -2;
+  }
+  rblush.renderWithNorms();
+  
+
+      
+  var lLeg = new Cube();
+  lLeg.color = [.9,.34,1,1];
+  lLeg.matrix.setTranslate(-.2,-.45,.2);
+  lLeg.matrix.rotate(270+g_legAngle, 0, 0,1);
+  
+  var lLegCoords = new Matrix4(lLeg.matrix);
+  lLeg.matrix.scale(0.35, .2, .3);
+  if (g_normalON){
+    lLeg.textureNum = -3;
+  }
+  else {
+    lLeg.textureNum = -2;
+  }
+  lLeg.renderWithNorms();
+
+  var rLeg = new Cube();
+  rLeg.color = [.9,.34,1,1];
+  rLeg.matrix.setTranslate(.1, -.45,.2);
+  rLeg.matrix.rotate(270-g_legAngle, 0, 0,1);
+  var rLegCoords = new Matrix4(rLeg.matrix);
+  rLeg.matrix.scale(0.35, .2, .3);
+  if (g_normalON){
+    rLeg.textureNum = -3;
+  }
+  else {
+    rLeg.textureNum = -2;
+  }
+  rLeg.renderWithNorms();
+
+  var lFoot = new Cube();
+  lFoot.color = [1,0,1,1];
+  lFoot.matrix = lLegCoords;
+  lFoot.matrix.translate(0.35, .2,0);
+  lFoot.matrix.rotate(270, 0, 0,1);
+  lFoot.matrix.scale(0.3, .1, .3);
+  if (g_normalON){
+    lFoot.textureNum = -3;
+  }
+  else {
+    lFoot.textureNum = -2;
+  }
+  lFoot.renderWithNorms();
+
+  
+  var rFoot = new Cube();
+  rFoot.color = [1,0,1,1];
+  rFoot.matrix = rLegCoords;
+  rFoot.matrix.translate(.35, .3,0);
+  rFoot.matrix.rotate(270, 0, 0,1);
+  rFoot.matrix.scale(0.3, .1, .3);
+  if (g_normalON){
+    rFoot.textureNum = -3;
+  }
+  else {
+    rFoot.textureNum = -2;
+  }
+  rFoot.renderWithNorms();
+
+
+   
 
 
 
