@@ -339,12 +339,12 @@ let g_globalAnglex = 0;
 let g_globalAngley = 0;
 let g_armAngle = 0;
 let g_handAngle = 0;
-let g_Aanimation = false;
+let g_Aanimation = true;
 let g_legAngle = 0;
 let mouthMove = false;
 let g_lightPos = [-.5,3,-1];
 let g_camera = new Camera();
-let g_lightOn = false;
+let g_lightOn = true;
 let lightAnim = true;
 let lightColor = [1.0, 1.0, 1.0]; // Default white light
 function addActionsForHtmlUI(){
