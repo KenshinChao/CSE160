@@ -7,6 +7,7 @@ class Sphere{
       // this.size = 5.0;
       // this.segments = 10;
       this.matrix = new Matrix4();
+      this.normalMatrix = new Matrix4();
       this.textureNum = -2;
       this.verts32 = new Float32Array([]);
     }

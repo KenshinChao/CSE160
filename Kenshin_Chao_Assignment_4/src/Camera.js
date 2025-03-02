@@ -1,6 +1,6 @@
 class Camera {
     constructor(){
-        this.eye = new Vector3([0,0,6]); //almost like location
+        this.eye = new Vector3([0,0,9]); //almost like location
         this.at = new Vector3([0,0,-100]);
         this.up = new Vector3([0,1,0]);
         this.speed = 1;
