@@ -2,7 +2,7 @@
 // Vertex shader program
 
 
-//https://kenshinchao.github.io/CSE160/Kenshin_Chao_Assignment_1/src/ColoredPoints.html
+//https://kenshinchao.github.io/CSE160/Kenshin_Chao_Assignment_4/src/World.html
 
 var VSHADER_SOURCE =`
   precision mediump float;  
