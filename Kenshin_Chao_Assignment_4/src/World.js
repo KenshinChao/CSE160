@@ -301,6 +301,7 @@ let mouthMove = false;
 let g_lightPos = [-.5,3,-1];
 let g_camera = new Camera();
 let g_lightOn = false;
+let lightAnim = true;
 function addActionsForHtmlUI(){
   // document.getElementById('green').onclick = function() {
   document.getElementById('normalOn').onclick = function() {g_normalON = true;
@@ -315,6 +316,13 @@ function addActionsForHtmlUI(){
   }
 
   document.getElementById('lightOn').onclick = function() {g_lightOn = true;
+    // resetPreviewShape();
+  }
+  document.getElementById('lightAnimOn').onclick = function() {lightAnim = true;
+    // resetPreviewShape();
+  }
+
+  document.getElementById('lightAnimOff').onclick = function() {lightAnim = false;
     // resetPreviewShape();
   }
   // document.getElementById('animationOn').onclick = function() {g_Aanimation = true;
@@ -349,7 +357,9 @@ function addActionsForHtmlUI(){
     g_lightPos[2] = this.value/100; 
     renderScene();
   }
+
   
+
     
   });
   // document.getElementById('armSlide').addEventListener('mousemove', function() {
@@ -640,8 +650,9 @@ function updateAnimationAngles() {
     g_mouthAngle = 45*Math.sin(g_seconds);
     
   }
-
+  if (lightAnim == true){
   g_lightPos[0] = Math.cos(g_seconds);
+  }
 }
 
 
@@ -966,6 +977,9 @@ function convertCoordinatesEventToGL(ev){
   // sphere.matrix.scale(20,20,20);
   if (g_normalON){
     sphere.textureNum = -3;
+  }
+  else {
+    sphere.textureNum = 1;
   }
   sphere.matrix.translate(1,0,-2)
   
