@@ -4,13 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Three.js</title>
-  </head>
+
   <body>
     <canvas id="c"></canvas>
     <div id="loading">
         <div class="progress"><div class="progressbar"></div></div>
-      </div>
-    
+    </div>
+    <div class="split">
+      <div id="view1" tabindex="1"></div>
+      <div id="view2" tabindex="2"></div>
+   </div>
     <style>
         html, body {
            margin: 0;
@@ -43,8 +46,20 @@
             transform-origin: top left;
             transform: scaleX(0);
         }
+        .split {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+        }
+        .split>div {
+          width: 100%;
+          height: 100%;
+        }
         </style>
-        
+    </head>
   </body>
   <script type="importmap">
     {
@@ -88,12 +103,17 @@ function main() {
 	const fov = 75;
 	const aspect = 2; // the canvas default
 	const near = 0.1;
-	const far = 5;
+	const far = 25;
 	const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-	camera.position.z = 3;
+	camera.position.set(0, 2, 2);
 
     camera.updateProjectionMatrix();
-	const scene = new THREE.Scene();
+
+
+  const view1Elem = document.querySelector('#view1');
+const view2Elem = document.querySelector('#view2');
+const cameraHelper = new THREE.CameraHelper( camera );
+
   class MinMaxGUIHelper {
 
 constructor( obj, minProp, maxProp, minDif ) {
@@ -135,15 +155,72 @@ function updateCamera() {
 }
  
 const gui = new GUI();
-gui.add(camera, 'fov', 1, 180).onChange(updateCamera);
-const minMaxGUIHelper = new MinMaxGUIHelper(camera, 'near', 'far', 0.1);
-gui.add(minMaxGUIHelper, 'min', 0.1, 50, 0.1).name('near').onChange(updateCamera);
-gui.add(minMaxGUIHelper, 'max', 0.1, 50, 0.1).name('far').onChange(updateCamera);
-const controls = new OrbitControls( camera, canvas );
-controls.target.set( 0, 1, 0 );
-controls.update();
+	gui.add( camera, 'fov', 1, 180 );
+	const minMaxGUIHelper = new MinMaxGUIHelper( camera, 'near', 'far', 0.1 );
+	gui.add( minMaxGUIHelper, 'min', 0.1, 50, 0.1 ).name( 'near' );
+	gui.add( minMaxGUIHelper, 'max', 0.1, 50, 0.1 ).name( 'far' );
 
-  
+	const controls = new OrbitControls( camera, view1Elem );
+	controls.target.set( 0, 0, 0 );
+	controls.update();
+
+	const camera2 = new THREE.PerspectiveCamera(
+		60, // fov
+		2, // aspect
+		0.1, // near
+		500, // far
+	);
+	camera2.position.set( 40, 10, 30 );
+	camera2.lookAt( 0, 5, 0 );
+
+	const controls2 = new OrbitControls( camera2, view2Elem );
+	controls2.target.set( 0, 5, 0 );
+	controls2.update();
+
+	const scene = new THREE.Scene();
+	scene.background = new THREE.Color( 'black' );
+	scene.add( cameraHelper );
+
+	function resizeRendererToDisplaySize( renderer ) {
+
+const canvas = renderer.domElement;
+const width = canvas.clientWidth;
+const height = canvas.clientHeight;
+const needResize = canvas.width !== width || canvas.height !== height;
+if ( needResize ) {
+
+  renderer.setSize( width, height, false );
+
+}
+
+return needResize;
+
+}
+
+function setScissorForElement( elem ) {
+
+const canvasRect = canvas.getBoundingClientRect();
+const elemRect = elem.getBoundingClientRect();
+
+// compute a canvas relative rectangle
+const right = Math.min( elemRect.right, canvasRect.right ) - canvasRect.left;
+const left = Math.max( 0, elemRect.left - canvasRect.left );
+const bottom = Math.min( elemRect.bottom, canvasRect.bottom ) - canvasRect.top;
+const top = Math.max( 0, elemRect.top - canvasRect.top );
+
+const width = Math.min( canvasRect.width, right - left );
+const height = Math.min( canvasRect.height, bottom - top );
+
+// setup the scissor to only render to that part of the canvas
+const positiveYUpBottom = canvasRect.height - bottom;
+renderer.setScissor( left, positiveYUpBottom, width, height );
+renderer.setViewport( left, positiveYUpBottom, width, height );
+
+// return the aspect
+return width / height;
+
+}
+
   {
 
 const mtlLoader = new MTLLoader();
@@ -174,7 +251,29 @@ mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
     // texture.colorSpace = THREE.SRGBColorSpace;
     let cubes = [];
     
+    {
 
+const planeSize = 40;
+
+const loader = new THREE.TextureLoader();
+const texture = loader.load( './textures/cherry_planks.png' );
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.magFilter = THREE.NearestFilter;
+texture.colorSpace = THREE.SRGBColorSpace;
+const repeats = planeSize / 2;
+texture.repeat.set( repeats, repeats );
+
+const planeGeo = new THREE.PlaneGeometry( planeSize, planeSize );
+const planeMat = new THREE.MeshPhongMaterial( {
+  map: texture,
+  side: THREE.DoubleSide,
+} );
+const mesh = new THREE.Mesh( planeGeo, planeMat );
+mesh.rotation.x = Math.PI * - .5;
+scene.add( mesh );
+
+}
 
     const material = new THREE.MeshPhongMaterial( { map: texture } );
 
@@ -215,19 +314,52 @@ mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
         time *= 0.001;  // convert time to seconds
         const canvas = renderer.domElement;
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        if (resizeRendererToDisplaySize(renderer)) {
-        const canvas = renderer.domElement;
-        camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.updateProjectionMatrix();
-        }
+        resizeRendererToDisplaySize(renderer);
+ 
+    // turn on the scissor
+    renderer.setScissorTest(true);
+ 
+    // render the original view
+    {
+      const aspect = setScissorForElement(view1Elem);
+ 
+      // adjust the camera for this aspect
+      camera.aspect = aspect;
+      camera.updateProjectionMatrix();
+      cameraHelper.update(); 
+
+ 
+      // don't draw the camera helper in the original view
+      cameraHelper.visible = false;
+ 
+      scene.background.set(0x000000);
+ 
+      // render
+      renderer.render(scene, camera);
+    }
+ 
+    // render from the 2nd camera
+    {
+      const aspect = setScissorForElement(view2Elem);
+ 
+      // adjust the camera for this aspect
+      camera2.aspect = aspect;
+      camera2.updateProjectionMatrix();
+ 
+      // draw the camera helper in the 2nd view
+      cameraHelper.visible = true;
+ 
+      scene.background.set(0x000040);
+ 
+      renderer.render(scene, camera2);
+    }
         cubes.forEach((cube, ndx) => {
         const speed = .2 + ndx * .1;
         const rot = time * speed;
         cube.rotation.x = rot;
         cube.rotation.y = rot;
         });
-            
-        renderer.render(scene, camera);
+      
         
         requestAnimationFrame(render);
     }
