@@ -57,10 +57,15 @@
 <script type="module">
 import * as THREE from 'three';
 import { GUI } from './lib/lil-gui.module.min.js';
+import { OrbitControls } from './lib/OrbitControls.js';
+import { OBJLoader } from './lib/OBJLoader.js';
+import {MTLLoader} from './lib/MTLLoader.js';
 
 
 function main() {
     
+
+
 	const canvas = document.querySelector( '#c' );
 	const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
     function resizeRendererToDisplaySize(renderer) {
@@ -74,15 +79,39 @@ function main() {
       }
       return needResize;
     }
+
+
+
+
 	const fov = 75;
 	const aspect = 2; // the canvas default
 	const near = 0.1;
 	const far = 5;
 	const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-	camera.position.z = 2;
+	camera.position.z = 3;
 
     camera.updateProjectionMatrix();
 	const scene = new THREE.Scene();
+
+
+
+
+  {
+
+const mtlLoader = new MTLLoader();
+mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
+
+  mtl.preload();
+  const objLoader = new OBJLoader();
+  objLoader.setMaterials( mtl );
+  objLoader.load( './models/coffee_cup.obj', ( root ) => {
+    scene.add( root );
+
+  } );
+
+} );
+
+}
 
 	const boxWidth = 1;
 	const boxHeight = 1;
@@ -92,7 +121,7 @@ function main() {
  
     const loadManager = new THREE.LoadingManager();
     const loader = new THREE.TextureLoader(loadManager);
-    const texture = loader.load( './textures/dirt.jpg' );
+    const texture = loader.load( './textures/cherry_planks.png' );
     
     // texture.colorSpace = THREE.SRGBColorSpace;
     let cubes = [];
@@ -114,9 +143,10 @@ function main() {
     const progressBarElem = loadingElem.querySelector('.progressbar');
     loadManager.onLoad = () => {
     loadingElem.style.display = 'none';
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-    cubes.push(cube);  // add to our list of cubes to rotate
+    // const cube = new THREE.Mesh(geometry, material);
+    // cube.position.x = 1.5
+    // scene.add(cube);
+    // cubes.push(cube);  // add to our list of cubes to rotate
     };
 
     loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
