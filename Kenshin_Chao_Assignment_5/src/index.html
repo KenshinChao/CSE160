@@ -83,6 +83,8 @@ function main() {
 
 
 
+
+
 	const fov = 75;
 	const aspect = 2; // the canvas default
 	const near = 0.1;
@@ -92,10 +94,53 @@ function main() {
 
     camera.updateProjectionMatrix();
 	const scene = new THREE.Scene();
+  class MinMaxGUIHelper {
+
+constructor( obj, minProp, maxProp, minDif ) {
+
+  this.obj = obj;
+  this.minProp = minProp;
+  this.maxProp = maxProp;
+  this.minDif = minDif;
+
+}
+get min() {
+
+  return this.obj[ this.minProp ];
+
+}
+set min( v ) {
+
+  this.obj[ this.minProp ] = v;
+  this.obj[ this.maxProp ] = Math.max( this.obj[ this.maxProp ], v + this.minDif );
+
+}
+get max() {
+
+  return this.obj[ this.maxProp ];
+
+}
+set max( v ) {
+
+  this.obj[ this.maxProp ] = v;
+  this.min = this.min; // this will call the min setter
+
+}
+
+}
 
 
+const gui = new GUI();
+gui.add(camera, 'fov', 1, 180);
+const minMaxGUIHelper = new MinMaxGUIHelper( camera, 'near', 'far', 0.1 );
+gui.add(minMaxGUIHelper, 'min', 0.1, 50, 0.1).name('near');
+gui.add(minMaxGUIHelper, 'max', 0.1, 50, 0.1).name('far');
 
+const controls = new OrbitControls( camera, canvas );
+controls.target.set( 0, 1, 0 );
+controls.update();
 
+  
   {
 
 const mtlLoader = new MTLLoader();
@@ -226,31 +271,31 @@ mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
   }
 }
 
-    const wrapModes = {
-  'ClampToEdgeWrapping': THREE.ClampToEdgeWrapping,
-  'RepeatWrapping': THREE.RepeatWrapping,
-  'MirroredRepeatWrapping': THREE.MirroredRepeatWrapping,
-};
+//     const wrapModes = {
+//   'ClampToEdgeWrapping': THREE.ClampToEdgeWrapping,
+//   'RepeatWrapping': THREE.RepeatWrapping,
+//   'MirroredRepeatWrapping': THREE.MirroredRepeatWrapping,
+// };
  
-function updateTexture() {
-  texture.needsUpdate = true;
-}
+// function updateTexture() {
+//   texture.needsUpdate = true;
+// }
  
-const gui = new GUI();
-gui.add(new StringToNumberHelper(texture, 'wrapS'), 'value', wrapModes)
-  .name('texture.wrapS')
-  .onChange(updateTexture);
-gui.add(new StringToNumberHelper(texture, 'wrapT'), 'value', wrapModes)
-  .name('texture.wrapT')
-  .onChange(updateTexture);
-gui.add(texture.repeat, 'x', 0, 5, .01).name('texture.repeat.x');
-gui.add(texture.repeat, 'y', 0, 5, .01).name('texture.repeat.y');
-gui.add(texture.offset, 'x', -2, 2, .01).name('texture.offset.x');
-gui.add(texture.offset, 'y', -2, 2, .01).name('texture.offset.y');
-gui.add(texture.center, 'x', -.5, 1.5, .01).name('texture.center.x');
-gui.add(texture.center, 'y', -.5, 1.5, .01).name('texture.center.y');
-gui.add(new DegRadHelper(texture, 'rotation'), 'value', -360, 360)
-  .name('texture.rotation');
+// const gui = new GUI();
+// gui.add(new StringToNumberHelper(texture, 'wrapS'), 'value', wrapModes)
+//   .name('texture.wrapS')
+//   .onChange(updateTexture);
+// gui.add(new StringToNumberHelper(texture, 'wrapT'), 'value', wrapModes)
+//   .name('texture.wrapT')
+//   .onChange(updateTexture);
+// gui.add(texture.repeat, 'x', 0, 5, .01).name('texture.repeat.x');
+// gui.add(texture.repeat, 'y', 0, 5, .01).name('texture.repeat.y');
+// gui.add(texture.offset, 'x', -2, 2, .01).name('texture.offset.x');
+// gui.add(texture.offset, 'y', -2, 2, .01).name('texture.offset.y');
+// gui.add(texture.center, 'x', -.5, 1.5, .01).name('texture.center.x');
+// gui.add(texture.center, 'y', -.5, 1.5, .01).name('texture.center.y');
+// gui.add(new DegRadHelper(texture, 'rotation'), 'value', -360, 360)
+//   .name('texture.rotation');
 
     requestAnimationFrame(render);
     
