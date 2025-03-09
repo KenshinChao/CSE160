@@ -178,7 +178,14 @@ const gui = new GUI();
 	controls2.update();
 
 	const scene = new THREE.Scene();
-	scene.background = new THREE.Color( 'black' );
+	//scene.background = new THREE.Color( 'white' );
+  {
+  const near = 1;
+  const far = 2;
+  const color = 'white';
+
+  scene.background = new THREE.Color(color);
+}
 	scene.add( cameraHelper );
 
 	function resizeRendererToDisplaySize( renderer ) {
@@ -256,7 +263,7 @@ mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
 const planeSize = 40;
 
 const loader = new THREE.TextureLoader();
-const texture = loader.load( './textures/cherry_planks.png' );
+const texture = loader.load( './textures/dirt.jpg' );
 texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
 texture.magFilter = THREE.NearestFilter;
@@ -331,8 +338,8 @@ scene.add( mesh );
  
       // don't draw the camera helper in the original view
       cameraHelper.visible = false;
- 
-      scene.background.set(0x000000);
+      scene.fog = new THREE.Fog(color, near, far+4);
+      scene.background.set(color);
  
       // render
       renderer.render(scene, camera);
@@ -348,7 +355,7 @@ scene.add( mesh );
  
       // draw the camera helper in the 2nd view
       cameraHelper.visible = true;
- 
+      scene.fog = null;
       scene.background.set(0x000040);
  
       renderer.render(scene, camera2);
@@ -379,58 +386,6 @@ scene.add( mesh );
         
         return cube;
     }
-
-    class DegRadHelper {
-  constructor(obj, prop) {
-    this.obj = obj;
-    this.prop = prop;
-  }
-  get value() {
-    return THREE.MathUtils.radToDeg(this.obj[this.prop]);
-  }
-  set value(v) {
-    this.obj[this.prop] = THREE.MathUtils.degToRad(v);
-  }
-}
-
-    class StringToNumberHelper {
-  constructor(obj, prop) {
-    this.obj = obj;
-    this.prop = prop;
-  }
-  get value() {
-    return this.obj[this.prop];
-  }
-  set value(v) {
-    this.obj[this.prop] = parseFloat(v);
-  }
-}
-
-//     const wrapModes = {
-//   'ClampToEdgeWrapping': THREE.ClampToEdgeWrapping,
-//   'RepeatWrapping': THREE.RepeatWrapping,
-//   'MirroredRepeatWrapping': THREE.MirroredRepeatWrapping,
-// };
- 
-// function updateTexture() {
-//   texture.needsUpdate = true;
-// }
- 
-// const gui = new GUI();
-// gui.add(new StringToNumberHelper(texture, 'wrapS'), 'value', wrapModes)
-//   .name('texture.wrapS')
-//   .onChange(updateTexture);
-// gui.add(new StringToNumberHelper(texture, 'wrapT'), 'value', wrapModes)
-//   .name('texture.wrapT')
-//   .onChange(updateTexture);
-// gui.add(texture.repeat, 'x', 0, 5, .01).name('texture.repeat.x');
-// gui.add(texture.repeat, 'y', 0, 5, .01).name('texture.repeat.y');
-// gui.add(texture.offset, 'x', -2, 2, .01).name('texture.offset.x');
-// gui.add(texture.offset, 'y', -2, 2, .01).name('texture.offset.y');
-// gui.add(texture.center, 'x', -.5, 1.5, .01).name('texture.center.x');
-// gui.add(texture.center, 'y', -.5, 1.5, .01).name('texture.center.y');
-// gui.add(new DegRadHelper(texture, 'rotation'), 'value', -360, 360)
-//   .name('texture.rotation');
 
     requestAnimationFrame(render);
     
