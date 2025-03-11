@@ -82,7 +82,11 @@ function main() {
 
 
 	const canvas = document.querySelector( '#c' );
-	const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    canvas,
+    alpha: true,
+  });
     function resizeRendererToDisplaySize(renderer) {
       const canvas = renderer.domElement;
       const pixelRatio = window.devicePixelRatio;
@@ -374,8 +378,18 @@ scene.add( mesh );
     const intensity = 3;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(-1, 2, 4);
+
+    const pointlight = new THREE.PointLight('green', 150);
+    pointlight.position.set(0,10,0);
+
+    const spotlight = new THREE.SpotLight('red', 75);
+    spotlight.position.set(0,4,0);
+
     scene.add(light);
 
+    scene.add(pointlight);
+
+    scene.add(spotlight);
     function makeInstance(geometry, color, x) {
         const material = new THREE.MeshPhongMaterial({color});
         
