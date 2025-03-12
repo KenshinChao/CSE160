@@ -87,6 +87,8 @@ function main() {
     canvas,
     alpha: true,
   });
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // ✅ Softer shadows
     function resizeRendererToDisplaySize(renderer) {
       const canvas = renderer.domElement;
       const pixelRatio = window.devicePixelRatio;
@@ -277,11 +279,13 @@ mtlLoader.load( './models/coffee_cup.mtl', ( mtl ) => {
     // texture.colorSpace = THREE.SRGBColorSpace;
     let cubes = [];
     
+
+
     {
 
 const planeSize = 40;
 
-const loader = new THREE.TextureLoader();
+
 const texture = loader.load( './textures/dirt.jpg' );
 texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
@@ -295,13 +299,49 @@ const planeMat = new THREE.MeshPhongMaterial( {
   map: texture,
   side: THREE.DoubleSide,
 } );
+planeMat.color.setRGB( 1.5, 1.5, 1.5 );
 const mesh = new THREE.Mesh( planeGeo, planeMat );
+mesh.receiveShadow = true;
 mesh.rotation.x = Math.PI * - .5;
 scene.add( mesh );
 
 
 
+
 }
+
+const shadowTexture = loader.load( './textures/roundshadow.png' );
+const sphereShadowBases = [];
+{
+
+  const planeSize = 1;
+const shadowGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+ 
+for (let i = 0; i < cubes.length; ++i) {
+  // make a base for the shadow and the sphere
+  // so they move together.
+  const base = new THREE.Object3D();
+  scene.add(base);
+
+  const shadowMat = new THREE.MeshBasicMaterial({
+    map: shadowTexture,
+    transparent: true,    // so we can see the ground
+    depthWrite: false,    // so we don't have to sort
+  });
+
+  const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+  shadowMesh.position.y = 0.001;  // so we're above the ground slightly
+  shadowMesh.rotation.x = Math.PI * -.5;
+  const shadowSize = sphereRadius * 4;
+  shadowMesh.scale.set(shadowSize, shadowSize, shadowSize);
+  base.add(shadowMesh);
+ 
+  sphereShadowBases.push({base, cubeMesh: cubes[i], shadowMesh, y: cubes[i].position.y});
+
+  }
+
+}
+
 
     //const material = new THREE.MeshPhongMaterial( { map: texture } );
     const cylgeometry = new THREE.CylinderGeometry( .5, 1, 2, 10 );
@@ -331,6 +371,8 @@ for (var i = 0; i < numOfMats; i++){
       cube.position.z = -4
       cube.position.y = 2
       cube.position.x += 2*i;
+      cube.castShadow = true;
+      cube.receiveShadow = true;
       cubes.push(cube);
       scene.add(cube);
       const cylinder = new THREE.Mesh(cylgeometry, materials[i]);
@@ -448,6 +490,7 @@ for (var i = 0; i < numOfMats; i++){
  
       // render
       renderer.render(scene, camera);
+
     }
  
     // render from the 2nd camera
@@ -478,21 +521,30 @@ for (var i = 0; i < numOfMats; i++){
         cube.rotation.y = rot;
          
       });
+
+      
+    
+      
       
         
         requestAnimationFrame(render);
-    }
+    
+    
+      }
     const color = 0xFFFFFF;
     const intensity = 3;
     const light = new THREE.DirectionalLight(color, intensity);
+    light.castShadow = true;
     light.position.set(-1, 2, 4);
 
-    const pointlight = new THREE.PointLight('green', 150);
+    const pointlight = new THREE.PointLight('black', 150);
     pointlight.position.set(0,10,0);
+    pointlight.castShadow = true;
+    
 
     const spotlight = new THREE.SpotLight('red', 75);
     spotlight.position.set(0,4,0);
-
+      spotlight.castShadow = false;
     scene.add(light);
 
     scene.add(pointlight);
