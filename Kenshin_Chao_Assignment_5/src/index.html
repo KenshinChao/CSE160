@@ -101,6 +101,16 @@ function main() {
 
 
 
+  const loaderCube = new THREE.CubeTextureLoader();
+		const texturebg = loaderCube.load( [
+			'./textures/cherry_planks.png',
+			'./textures/diamond_block.png',
+			'./textures/oak_planks.png',
+			'./textures/stone.png',
+			'./textures/obsidian.png',
+			'./textures/smooth_stone.png',
+		] );
+
 
 
 
@@ -188,7 +198,10 @@ const gui = new GUI();
   const far = 2;
   const color = 'white';
 
-  scene.background = new THREE.Color(color);
+		scene.background = texturebg;
+
+
+ // scene.background = new THREE.Color(color);
 }
 	scene.add( cameraHelper );
 
@@ -343,7 +356,8 @@ scene.add( mesh );
       // don't draw the camera helper in the original view
       cameraHelper.visible = false;
       scene.fog = new THREE.Fog(color, near, far+4);
-      scene.background.set(color);
+
+  scene.background = texturebg;
  
       // render
       renderer.render(scene, camera);
@@ -360,7 +374,11 @@ scene.add( mesh );
       // draw the camera helper in the 2nd view
       cameraHelper.visible = true;
       scene.fog = null;
-      scene.background.set(0x000040);
+      const loader = new THREE.TextureLoader();
+  const bgTexture = loader.load('textures/sky.jpg');
+  bgTexture.colorSpace = THREE.SRGBColorSpace;
+
+  scene.background = texturebg;
  
       renderer.render(scene, camera2);
     }
